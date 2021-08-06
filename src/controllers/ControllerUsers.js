@@ -1,14 +1,12 @@
-import response from '../helpers/helpers'
+import { response } from '../helpers/helpers.js';
 
-const register= (req, res) => {
-    response.response(res, "success", 200, "Successfully")
-}
+const register = (req, res) => {
+  response(res, 'success', 200, 'Successfully');
+};
 
-const login = (req, res) => {
-
-}
+const login = (req, res) => {};
 
 export default {
-    register,
-    login
-}
+  register,
+  login,
+};

@@ -34,7 +34,7 @@ const promiseResolveReject = (resolve, reject, error, result) => {
   }
 };
 
-export default {
+export {
   response,
   responseError,
   promiseResolveReject,
