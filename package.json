@@ -1,0 +1,36 @@
+{
+  "name": "z-wallet",
+  "version": "1.0.0",
+  "description": "api z-wallet",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "api",
+    "z-wallet"
+  ],
+  "author": "G.B.A",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "express-validator": "^6.12.1",
+    "ioredis": "^4.27.7",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.0",
+    "nodemailer": "^6.6.3",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "nodemon": "^2.0.12"
+  }
+}
