@@ -1,6 +1,6 @@
 import Express from "express";
-import userRouter from "./src/routes/users.js";
 import "dotenv/config";
+import userRouter from "./src/routes/users.js";
 import helpers from "./src/helpers/helpers.js";
 const app = Express();
 const port = process.env.PORT;
