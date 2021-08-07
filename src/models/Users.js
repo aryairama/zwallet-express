@@ -3,9 +3,31 @@ import { promiseResolveReject } from "../helpers/helpers.js";
 
 const register = (data) =>
   new Promise((resolve, reject) => {
-    connection.query("", data, (err, result) => {
+    connection.query("INSERT INTO users SET ?", data, (err, result) => {
       promiseResolveReject(resolve, reject, err, result);
     });
   });
 
-export { register };
+const checkExistUser = (fieldValue, field) =>
+  new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT * FROM users where ${field} = ?`,
+      fieldValue,
+      (error, result) => {
+        promiseResolveReject(resolve, reject, error, result);
+      }
+    );
+  });
+
+const activateAccount = (email) =>
+  new Promise((resolve, reject) => {
+    connection.query(
+      "UPDATE users SET email_verified = 1 WHERE email = ?",
+      email,
+      (err, result) => {
+        promiseResolveReject(resolve, reject, err, result);
+      }
+    );
+  });
+
+export default { register, checkExistUser, activateAccount };

@@ -6,5 +6,6 @@ const router = express.Router()
 
 router
 .post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
+.get('/activation/:token', constrollerUsers.activateAccount)
 
 export default router

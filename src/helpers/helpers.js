@@ -18,7 +18,7 @@ const responsePagination = (res, status, statusCode, message, data, pagination) 
 };
 
 const responseError = (res, status, statusCode, message, error) => {
-  res.status(statusCode).json({
+  res.status(statusCode || 500).json({
     status,
     statusCode,
     message,

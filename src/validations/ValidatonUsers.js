@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import userModel from '../models/Users.js'
 
 const registerFieldRules = () => [
   body("username")
@@ -12,7 +13,16 @@ const registerFieldRules = () => [
     .withMessage("Email cannot empty")
     .bail()
     .isEmail()
-    .withMessage("Your email is invalid"),
+    .withMessage("Your email is invalid")
+    .bail()
+    .custom(async (value) => {
+      const existingEmail = await userModel.checkExistUser(value, 'email');
+      if (existingEmail.length > 0) {
+        throw new Error('e-mail already registered');
+      }
+      return true;
+    })
+    .normalizeEmail(),
   body("password")
     .notEmpty()
     .withMessage("Password cannot empty")
