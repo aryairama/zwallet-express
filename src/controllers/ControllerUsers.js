@@ -16,6 +16,7 @@ const register = async (req, res, next) => {
         username: req.body.username,
         email: req.body.email,
         password: await bcrypt.hash(req.body.password, salt),
+        image: 'user.jpg'
       };
       const addDataUser = await userModel.register(form);
       if (addDataUser.affectedRows) {
