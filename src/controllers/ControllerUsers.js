@@ -1,6 +1,6 @@
-import { response } from "../helpers/helpers.js";
-// import { register } from "../models/Users.js";
-import bcrypt from 'bcrypt'
+import { response } from '../helpers/helpers.js';
+import { register as queryRegister } from '../models/Users.js';
+import bcrypt from 'bcrypt';
 
 const register = (req, res) => {
   const { username, email, password } = req.body;
