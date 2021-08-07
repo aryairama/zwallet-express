@@ -41,4 +41,15 @@ const createPIN = (pin, email) =>
     );
   });
 
-export default { register, checkExistUser, activateAccount, createPIN };
+const changePassword = (data, email) =>
+  new Promise((resolve, reject) => {
+    connection.query(
+      "UPDATE users SET ? WHERE email = ?",
+      [data, email],
+      (err, result) => {
+        promiseResolveReject(resolve, reject, err, result);
+      }
+    );
+  });
+
+export default { register, checkExistUser, activateAccount, createPIN, changePassword };

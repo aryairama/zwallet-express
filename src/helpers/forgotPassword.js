@@ -23,7 +23,7 @@ const forgotPassword = (toEmail, token, name) => {
       attachments: [
         {
           filename: "forgotpassword.png",
-          path: "./assets/img/forgotpassword.png",
+          path: "./src/assets/img/forgotpassword.png",
           cid: "forgotpw",
         },
       ],

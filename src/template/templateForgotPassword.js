@@ -74,13 +74,13 @@ const templateForgotPassword = (link, name) => `
         <img src="cid:forgotpw" alt="">
         <h2>Reset your password</h2>
         <p>
-            Hi <strong>Candra, </strong> Did You Forgot Your Password? <br>
+            Hi <strong>${name}, </strong> Did You Forgot Your Password? <br>
             Don’t Worry, You Can Reset Your Password Now By Clicking this button below !
         </p>
-        <a href="" class="button">Reset Password</a>
+        <a href="${link}" class="button">Reset Password</a>
         <div class="footer">
             <b>Or copy and paste this link into your browser</b> <br>
-            <a href="" class="link">link</a>
+            <a href="${link}" class="link">${link}</a>
         </div>
     </div>
 </body>

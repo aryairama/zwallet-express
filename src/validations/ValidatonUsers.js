@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body} from "express-validator";
 import userModel from "../models/Users.js";
 
 const registerFieldRules = () => [
@@ -62,4 +62,19 @@ const emailRules = () => [
     }),
 ];
 
-export { registerFieldRules, PINRules, emailRules };
+const changePasswordRules = () => [
+  body("password")
+  .notEmpty()
+  .withMessage("Please insert new password")
+  .bail()
+  .isLength({ min: 4, max: 15 })
+  .withMessage("Password min 4 & max 15"),
+  body("password2")
+  .notEmpty()
+  .withMessage("Please insert compare password")
+  .bail()
+  .isLength({ min: 4, max: 15 })
+  .withMessage("Password min 4 & max 15"),
+]
+
+export { registerFieldRules, PINRules, emailRules, changePasswordRules };
