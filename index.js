@@ -1,10 +1,15 @@
 import Express from 'express';
+import fileUpload from 'express-fileupload';
 import 'dotenv/config';
 import userRouter from './src/routes/Users.js';
+import cors from 'cors'
 import { responseError } from './src/helpers/helpers.js';
 const app = Express();
 const port = process.env.PORT;
 
+app.use(cors());
+app.use(Express.json());
+app.use(fileUpload())
 app.use('/users', userRouter);
 // Handle not found
 app.use('*', (req, res, next) => {

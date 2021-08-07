@@ -1,7 +1,9 @@
-import { response } from '../helpers/helpers.js';
+import { response } from "../helpers/helpers.js";
+// import { register } from "../models/Users.js";
+import bcrypt from 'bcrypt'
 
 const register = (req, res) => {
-  response(res, 'success', 200, 'Successfully');
+  const { username, email, password } = req.body;
 };
 
 const login = (req, res) => {};
