@@ -21,8 +21,8 @@ const register = async (req, res, next) => {
       if (addDataUser.affectedRows) {
         delete dataUser["password"];
         Jwt.sign(
-          { username: dataUser.username, email: dataUser.email },
-          process.env.JWT_SECRET_KEY,
+          { username: dataUser.username, email: dataUser.email }, //semua data kecuali email pw
+          process.env.VERIF_SECRET_KEY,
           { expiresIn: "24h" },
           (err, token) => {
             if (err) {
@@ -59,18 +59,35 @@ const register = async (req, res, next) => {
 
 const activateAccount = (req, res) => {
   const { token } = req.params;
-  Jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
-    userModel.activateAccount(decoded.email)
-    .then(() => {
-      response(res, "Success", 200, "Successfully activate account")
-    })
-    .catch((err) => {
-      responseError(res, "Error", 500, "Failed activate account", err)
-    })
+  Jwt.verify(token, process.env.VERIF_SECRET_KEY, (err, decoded) => {
+    userModel
+      .activateAccount(decoded.email)
+      .then(() => {
+        response(res, "Success", 200, "Successfully activate account");
+      })
+      .catch((err) => {
+        responseError(res, "Error", 500, "Failed activate account", err);
+      });
   });
+};
+
+const createPIN = async (req, res, next) => {
+  try {
+    const { PIN, email } = req.body;
+    const createUserPIN = await userModel.createPIN(PIN, email)
+    if(createUserPIN.affectedRows){
+      response(res, "Success", 200, "Successfully created user PIN")
+    }else{
+      responseError(res, "Error", 500, "Failed created user PIN")
+      console.log(createUserPIN);
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
 export default {
   register,
   activateAccount,
+  createPIN
 };

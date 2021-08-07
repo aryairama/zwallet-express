@@ -30,4 +30,15 @@ const activateAccount = (email) =>
     );
   });
 
-export default { register, checkExistUser, activateAccount };
+const createPIN = (pin, email) =>
+  new Promise((resolve, reject) => {
+    connection.query(
+      "UPDATE users SET PIN = ? WHERE email = ?",
+      [pin, email],
+      (err, result) => {
+        promiseResolveReject(resolve, reject, err, result);
+      }
+    );
+  });
+
+export default { register, checkExistUser, activateAccount, createPIN };
