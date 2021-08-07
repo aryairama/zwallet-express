@@ -12,16 +12,18 @@ const register = async (req, res, next) => {
     );
     if (checkExistUser.length === 0) {
       const salt = await bcrypt.genSalt(10);
-      let dataUser = {
+      let form = {
         username: req.body.username,
         email: req.body.email,
         password: await bcrypt.hash(req.body.password, salt),
       };
-      const addDataUser = await userModel.register(dataUser);
+      const addDataUser = await userModel.register(form);
       if (addDataUser.affectedRows) {
+        const user = await userModel.checkExistUser(form.email, "email");
+        const dataUser = user[0];
         delete dataUser["password"];
         Jwt.sign(
-          { username: dataUser.username, email: dataUser.email }, //semua data kecuali email pw
+          {...dataUser},
           process.env.VERIF_SECRET_KEY,
           { expiresIn: "24h" },
           (err, token) => {
@@ -31,7 +33,7 @@ const register = async (req, res, next) => {
                 "Error",
                 500,
                 "Failed create activation token",
-                {}
+                err
               );
             } else {
               sendEmail(dataUser.email, token);
@@ -74,11 +76,11 @@ const activateAccount = (req, res) => {
 const createPIN = async (req, res, next) => {
   try {
     const { PIN, email } = req.body;
-    const createUserPIN = await userModel.createPIN(PIN, email)
-    if(createUserPIN.affectedRows){
-      response(res, "Success", 200, "Successfully created user PIN")
-    }else{
-      responseError(res, "Error", 500, "Failed created user PIN")
+    const createUserPIN = await userModel.createPIN(PIN, email);
+    if (createUserPIN.affectedRows) {
+      response(res, "Success", 200, "Successfully created user PIN");
+    } else {
+      responseError(res, "Error", 500, "Failed created user PIN");
       console.log(createUserPIN);
     }
   } catch (err) {
@@ -89,5 +91,5 @@ const createPIN = async (req, res, next) => {
 export default {
   register,
   activateAccount,
-  createPIN
+  createPIN,
 };
