@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
 import { responseError } from "./helpers.js";
+import email from '../template/email.js'
 
-const sendEmail = (toEmail, token) => {
+const sendEmail = (toEmail, token, name) => {
   let transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -15,8 +16,8 @@ const sendEmail = (toEmail, token) => {
       from: process.env.EMAIL_USER,
       to: toEmail,
       subject: "verifikasi email",
-      text: `Please activate your account with this link http://localhost:4000/users/activation/${token}`,
-      //   html: ""
+        // html: email(process.envFRONT_END_ACTIVATION_URL + token, name)
+        html: email(`http://localhost:4000/users/activation/${token}`, name)
     })
     .then((result) => {
         console.log("Nodemailer success");

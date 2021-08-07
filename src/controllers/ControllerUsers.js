@@ -36,7 +36,7 @@ const register = async (req, res, next) => {
                 err
               );
             } else {
-              sendEmail(dataUser.email, token);
+              sendEmail(dataUser.email, token, form.username);
               dataUser.token = token;
               response(
                 res,
