@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
-import email from "../template/email.js";
+import templateForgotPassword from "../template/templateForgotPassword.js";
 
-const sendEmail = (toEmail, token, name) => {
+const forgotPassword = (toEmail, token, name) => {
   let transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -14,16 +14,19 @@ const sendEmail = (toEmail, token, name) => {
     .sendMail({
       from: `zWallet <${process.env.EMAIL_USER}>`,
       to: toEmail,
-      subject: "Email Verification",
+      subject: "Password Reset",
       // html: email(process.envFRONT_END_ACTIVATION_URL + token, name)
+      html: templateForgotPassword(
+        `http://localhost:4000/users/forgotPassword/${token}`,
+        name
+      ),
       attachments: [
         {
-          filename: "emailSucess.png",
-          path: "./src/assets/img/emailSucess.png",
-          cid: "email",
+          filename: "forgotpassword.png",
+          path: "./assets/img/forgotpassword.png",
+          cid: "forgotpw",
         },
       ],
-      html: email(`http://localhost:4000/users/activation/${token}`, name),
     })
     .then((result) => {
       console.log("Nodemailer success");
@@ -33,5 +36,5 @@ const sendEmail = (toEmail, token, name) => {
       console.log("Nodemailer Error" + err);
     });
 };
-// D:\My file\Document\Bootcamp Arkademy\TeamProject\zwallet-express\src\assets\img\emailSucess.png
-export default sendEmail;
+
+export default forgotPassword;

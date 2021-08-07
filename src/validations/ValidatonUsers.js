@@ -45,4 +45,21 @@ const PINRules = () => [
     .withMessage("Your email is invalid"),
 ];
 
-export { registerFieldRules, PINRules };
+const emailRules = () => [
+  body("email")
+    .notEmpty()
+    .withMessage("Email cannot empty")
+    .bail()
+    .isEmail()
+    .withMessage("Your email is invalid")
+    .bail()
+    .custom(async (value) => {
+      const existingEmail = await userModel.checkExistUser(value, "email");
+      if (existingEmail.length <= 0) {
+        throw new Error("e-mail not found");
+      }
+      return true;
+    }),
+];
+
+export { registerFieldRules, PINRules, emailRules };

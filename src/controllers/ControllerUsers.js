@@ -3,6 +3,7 @@ import userModel from "../models/Users.js";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import sendEmail from "../helpers/sendEmail.js";
+import forgotPassword from "../helpers/forgotPassword.js";
 
 const register = async (req, res, next) => {
   try {
@@ -16,7 +17,7 @@ const register = async (req, res, next) => {
         username: req.body.username,
         email: req.body.email,
         password: await bcrypt.hash(req.body.password, salt),
-        image: 'user.jpg'
+        image: "user.jpg",
       };
       const addDataUser = await userModel.register(form);
       if (addDataUser.affectedRows) {
@@ -24,7 +25,7 @@ const register = async (req, res, next) => {
         const dataUser = user[0];
         delete dataUser["password"];
         Jwt.sign(
-          {...dataUser},
+          { ...dataUser },
           process.env.VERIF_SECRET_KEY,
           { expiresIn: "24h" },
           (err, token) => {
@@ -89,8 +90,32 @@ const createPIN = async (req, res, next) => {
   }
 };
 
+const forgotPW = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await userModel.checkExistUser(email, "email");
+    const username = user[0].username;
+
+    Jwt.sign(
+      { email, username },
+      process.env.FORGOT_PW_SECRET_KEY,
+      { expiresIn: "24h" },
+      (err, token) => {
+        if(err){
+          responseError(res, "JWT Error", 500, "Failed created forgot password token", err)
+        }else{
+          
+        }
+      }
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   register,
   activateAccount,
   createPIN,
+  forgotPW,
 };
