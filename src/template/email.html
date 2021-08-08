@@ -1,4 +1,3 @@
-const templateEmail = (link, name) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +22,6 @@ const templateEmail = (link, name) => `
             width: 80%;
             height: 80%;
             text-align: center;
-            color: #3A3D42;
         }
         img{
             width: 160px;
@@ -61,20 +59,17 @@ const templateEmail = (link, name) => `
 </head>
 <body>
     <div class="content">
-        <img src="cid:email" alt="">
+        <img src="../assets/img/emailSucess.png" alt="">
         <h2>Verify your email address</h2>
         <p>
-            Hi <strong>${name}, </strong> thank you for registering zwallet <br>
+            Hi <strong>Candra, </strong> thank you for registering zwallet <br>
             Please verify this email by clicking button below
         </p>
-        <a href="${link}" class="button">Verify your email</a>
+        <a href="" class="button">Verify your email</a>
         <div class="footer">
             <b>Or copy and paste this link into your browser</b> <br>
-            <a href="${link}" class="link">${link}</a>
+            <a href="" class="link">link</a>
         </div>
     </div>
 </body>
 </html>
-`;
-
-export default templateEmail
