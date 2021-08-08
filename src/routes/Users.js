@@ -10,7 +10,7 @@ import resultOfValidation from "../validations/ValidationResult.js";
 import constrollerUsers from "../controllers/ControllerUsers.js";
 import {
   checkTokenResetPassword,
-  checkTokenActivationPassword,
+  checkTokenActivation,
 } from "../middlewares/checkToken.js";
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router
   .post("/login", loginFieldRules(), resultOfValidation, constrollerUsers.login)
   .get(
     "/activation/:token",
-    checkTokenActivationPassword,
+    checkTokenActivation,
     constrollerUsers.activateAccount
   )
   .get("/show/:id", constrollerUsers.showUser)

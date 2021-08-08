@@ -58,7 +58,7 @@ const checkTokenResetPassword = (req, res, next) => {
   });
 };
 
-const checkTokenActivationPassword = (req, res, next) => {
+const checkTokenActivation = (req, res, next) => {
   const { token } = req.params;
   jwt.verify(token, process.env.VERIF_SECRET_KEY, (err, decoded) => {
     if (err) {
@@ -113,4 +113,4 @@ const checkTokenActivationPassword = (req, res, next) => {
   });
 };
 
-export { checkTokenResetPassword, checkTokenActivationPassword };
+export { checkTokenResetPassword, checkTokenActivation };
