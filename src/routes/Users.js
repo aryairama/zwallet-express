@@ -9,7 +9,7 @@ router
 .post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
 .get('/activation/:token', constrollerUsers.activateAccount)
 .get('/show/:id', constrollerUsers.showUser)
-
+// Forgot password
 .post('/forgotPassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
 .get('/forgotPassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
 .post('/changePassword', changePasswordRules(), resultOfValidation,constrollerUsers.changePassword)

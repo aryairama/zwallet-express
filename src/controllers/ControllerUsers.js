@@ -4,8 +4,7 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import sendEmail from "../helpers/sendEmail.js";
 import forgotPassword from "../helpers/forgotPassword.js";
-import Redis from "ioredis";
-const redis = new Redis();
+import { redis } from "../configs/redis.js";
 
 const register = async (req, res, next) => {
   try {
@@ -184,17 +183,17 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-
 const showUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await userModel.checkExistUser(id, "user_id")
-    .then((result) => {
-      response(res, "Success", 200, "Successfully get data user", result)
-    })
-    .catch((err) => {
-      responseError(res, "Error get data", 500, "Error during get data", err)
-    })
+    await userModel
+      .checkExistUser(id, "user_id")
+      .then((result) => {
+        response(res, "Success", 200, "Successfully get data user", result);
+      })
+      .catch((err) => {
+        responseError(res, "Error get data", 500, "Error during get data", err);
+      });
   } catch (err) {
     next(err);
   }
