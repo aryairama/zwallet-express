@@ -8,9 +8,12 @@ const router = express.Router()
 router
 .post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
 .get('/activation/:token', constrollerUsers.activateAccount)
-.get('/forgotPassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
+.get('/show/:id', constrollerUsers.showUser)
+
 .post('/forgotPassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
+.get('/forgotPassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
 .post('/changePassword', changePasswordRules(), resultOfValidation,constrollerUsers.changePassword)
+
 .post('/createPIN', PINRules(), resultOfValidation, constrollerUsers.createPIN)
 
 export default router
