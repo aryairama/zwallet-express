@@ -4,8 +4,7 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import sendEmail from "../helpers/sendEmail.js";
 import forgotPassword from "../helpers/forgotPassword.js";
-import Redis from "ioredis";
-const redis = new Redis();
+import { redis} from '../configs/redis'
 
 const register = async (req, res, next) => {
   try {
