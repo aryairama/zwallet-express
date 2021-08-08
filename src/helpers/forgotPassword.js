@@ -1,16 +1,8 @@
-import nodemailer from "nodemailer";
+import nodemailer from '../configs/nodemailer.js'
 import templateForgotPassword from "../template/templateForgotPassword.js";
 
 const forgotPassword = (toEmail, token, name) => {
-  let transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.PW_EMAIL,
-    },
-  });
-
-  transporter
+  nodemailer
     .sendMail({
       from: `zWallet <${process.env.EMAIL_USER}>`,
       to: toEmail,
