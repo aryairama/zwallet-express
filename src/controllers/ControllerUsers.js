@@ -205,27 +205,41 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     const dataUser = await userModel.checkExistUser(email, "email");
     const pw = dataUser[0].password;
-    bcrypt.compare(password, pw, async (err, resCompare) => {
-      if (!err) {
-        if (resCompare) {
-          delete dataUser[0].password;
-          const accessToken = await genAccessToken({...dataUser[0]}, {expiresIn: 60 * 60})
-          const refreshToken = await genRefreshToken({...dataUser[0]},{expiresIn: parseInt(60 * 60 * 2)})
-          // const refreshToken = await genRefreshToken(user, { expiresIn: 60 * 60 * 2 });
-          response(res, "Login Success", 200, "Login successfull", {...dataUser[0], accessToken, refreshToken});
+    if (dataUser[0].email_verified === 0) {
+      responseError(res, "Email not verified", 400, "Your email has not been verified, please verify first!")
+    } else {
+      bcrypt.compare(password, pw, async (err, resCompare) => {
+        if (!err) {
+          if (resCompare) {
+            delete dataUser[0].password;
+            const accessToken = await genAccessToken(
+              { ...dataUser[0] },
+              { expiresIn: 60 * 60 }
+            );
+            const refreshToken = await genRefreshToken(
+              { ...dataUser[0] },
+              { expiresIn: parseInt(60 * 60 * 2) }
+            );
+            // const refreshToken = await genRefreshToken(user, { expiresIn: 60 * 60 * 2 });
+            response(res, "Login Success", 200, "Login successfull", {
+              ...dataUser[0],
+              accessToken,
+              refreshToken,
+            });
+          } else {
+            responseError(res, "Password wrong", 400, "Your password is wrong");
+          }
         } else {
-          responseError(res, "Password wrong", 400, "Your password is wrong");
+          responseError(
+            res,
+            "Bcrypt Error",
+            500,
+            "Error during matching data",
+            err
+          );
         }
-      } else {
-        responseError(
-          res,
-          "Bcrypt Error",
-          500,
-          "Error during matching data",
-          err
-        );
-      }
-    });
+      });
+    }
   } catch (err) {
     next(err);
   }
