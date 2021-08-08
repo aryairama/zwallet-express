@@ -24,6 +24,7 @@ const register = async (req, res, next) => {
       if (addDataUser.affectedRows) {
         const user = await userModel.checkExistUser(form.email, "email");
         const dataUser = user[0];
+        const id = dataUser["user_id"];
         delete dataUser["password"];
         Jwt.sign(
           { ...dataUser },
@@ -48,6 +49,7 @@ const register = async (req, res, next) => {
                 `successfully added user data, we send link activation to ${dataUser.email}`,
                 dataUser
               );
+              redis.set(`JWTACTIVATION-${id}`, token);
             }
           }
         );
@@ -63,17 +65,15 @@ const register = async (req, res, next) => {
 };
 
 const activateAccount = (req, res) => {
-  const { token } = req.params;
-  Jwt.verify(token, process.env.VERIF_SECRET_KEY, (err, decoded) => {
-    userModel
-      .activateAccount(decoded.email)
-      .then(() => {
-        response(res, "Success", 200, "Successfully activate account");
-      })
-      .catch((err) => {
-        responseError(res, "Error", 500, "Failed activate account", err);
-      });
-  });
+  const email = req.email;
+  userModel
+    .activateAccount(email)
+    .then(() => {
+      response(res, "Success", 200, "Successfully activate account");
+    })
+    .catch((err) => {
+      responseError(res, "Error", 500, "Failed activate account", err);
+    });
 };
 
 const createPIN = async (req, res, next) => {
