@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import Jwt from 'jsonwebtoken';
-import { redis } from '../configs/redis';
+import { redis } from '../configs/redis.js';
 
 export const genAccessToken = (payload, option) =>
   new Promise((resolve, reject) => {

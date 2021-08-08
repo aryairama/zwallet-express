@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import sendEmail from "../helpers/sendEmail.js";
 import forgotPassword from "../helpers/forgotPassword.js";
-import { redis} from '../configs/redis'
+import { redis } from "../configs/redis.js";
 
 const register = async (req, res, next) => {
   try {
@@ -142,22 +142,58 @@ const resetPW = (req, res) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    const {password, password2, email} = req.body
-    if(password !== password2){
-      responseError(res, "Not Compare!", 400, "Your password is not compare", {})
-    }else{
+    const { password, password2, id } = req.body;
+    if (password !== password2) {
+      responseError(
+        res,
+        "Not Compare!",
+        400,
+        "Your password is not compare",
+        {}
+      );
+    } else {
       const salt = await bcrypt.genSalt(10);
       const data = {
-        password: await bcrypt.hash(req.body.password, salt)
-      }
-      await userModel.changePassword(data, email)
+        password: await bcrypt.hash(req.body.password, salt),
+      };
+      await userModel
+        .changePassword(data, id)
+        .then((result) => {
+          response(
+            res,
+            "Success change password",
+            200,
+            "your password has been changed successfully! Please login with your new password",
+            result
+          );
+          redis.del(`JWTFORGOT-${id}`);
+        })
+        .catch((err) => {
+          responseError(
+            res,
+            "Error change password",
+            500,
+            "Password failed to change, please try again later",
+            err
+          );
+        });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+const showUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await userModel
+      .checkExistUser(id, "user_id")
       .then((result) => {
-        response(res, "Success change password", 200, "your password has been changed successfully! Please login with your new password", result)
+        response(res, "Success", 200, "Successfully get data user", result);
       })
       .catch((err) => {
-        responseError(res, "Error change password", 500, "Password failed to change, please try again later", err)
-      })
-    }
+        responseError(res, "Error get data", 500, "Error during get data", err);
+      });
   } catch (err) {
     next(err);
   }
@@ -170,4 +206,5 @@ export default {
   forgotPW,
   resetPW,
   changePassword,
+  showUser,
 };
