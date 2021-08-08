@@ -1,19 +1,27 @@
-import express from "express";
-import {registerFieldRules, PINRules, emailRules, changePasswordRules} from "../validations/ValidatonUsers.js";
-import resultOfValidation from "../validations/ValidationResult.js";
-import constrollerUsers from '../controllers/ControllerUsers.js'
-import { checkTokenResetPassword } from "../middlewares/checkToken.js";
-const router = express.Router()
+import express from 'express';
+import {
+  registerFieldRules,
+  PINRules,
+  emailRules,
+  changePasswordRules,
+  loginFieldRules,
+} from '../validations/ValidatonUsers.js';
+import resultOfValidation from '../validations/ValidationResult.js';
+import constrollerUsers from '../controllers/ControllerUsers.js';
+import { checkTokenResetPassword, checkTokenActivation } from '../middlewares/checkToken.js';
+const router = express.Router();
 
 router
-.post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
-.get('/activation/:token', constrollerUsers.activateAccount)
-.get('/show/:id', constrollerUsers.showUser)
-// Forgot password
-.post('/forgotPassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
-.get('/forgotPassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
-.post('/changePassword', changePasswordRules(), resultOfValidation,constrollerUsers.changePassword)
+  .post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
+  .post('/login', loginFieldRules(), resultOfValidation, constrollerUsers.login)
+  .get('/activation/:token', checkTokenActivation, constrollerUsers.activateAccount)
+  .get('/show/:id', constrollerUsers.showUser)
 
-.post('/createPIN', PINRules(), resultOfValidation, constrollerUsers.createPIN)
+  // Forgot password
+  .post('/forgotpassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
+  .get('/forgotpassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
+  .post('/changepassword', changePasswordRules(), resultOfValidation, constrollerUsers.changePassword)
 
-export default router
+  .post('/createpin', PINRules(), resultOfValidation, constrollerUsers.createPIN);
+
+export default router;

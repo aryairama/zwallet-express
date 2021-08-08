@@ -1,4 +1,4 @@
-import { body} from "express-validator";
+import { body } from "express-validator";
 import userModel from "../models/Users.js";
 
 const registerFieldRules = () => [
@@ -64,17 +64,43 @@ const emailRules = () => [
 
 const changePasswordRules = () => [
   body("password")
-  .notEmpty()
-  .withMessage("Please insert new password")
-  .bail()
-  .isLength({ min: 4, max: 15 })
-  .withMessage("Password min 4 & max 15"),
+    .notEmpty()
+    .withMessage("Please insert new password")
+    .bail()
+    .isLength({ min: 4, max: 15 })
+    .withMessage("Password min 4 & max 15"),
   body("password2")
-  .notEmpty()
-  .withMessage("Please insert compare password")
-  .bail()
-  .isLength({ min: 4, max: 15 })
-  .withMessage("Password min 4 & max 15"),
-]
+    .notEmpty()
+    .withMessage("Please insert compare password")
+    .bail()
+    .isLength({ min: 4, max: 15 })
+    .withMessage("Password min 4 & max 15"),
+];
 
-export { registerFieldRules, PINRules, emailRules, changePasswordRules };
+const loginFieldRules = () => [
+  body("email")
+    .notEmpty()
+    .withMessage("Please enter your email")
+    .bail()
+    .isEmail()
+    .withMessage("Your email is invalid")
+    .bail()
+    .custom(async (value) => {
+      const existingEmail = await userModel.checkExistUser(value, "email");
+      if (existingEmail.length <= 0) {
+        throw new Error("Your email not found");
+      }
+      return true;
+    }),
+  body("password")
+    .notEmpty()
+    .withMessage("Please enter your password")
+];
+
+export {
+  registerFieldRules,
+  PINRules,
+  emailRules,
+  changePasswordRules,
+  loginFieldRules,
+};

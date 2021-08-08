@@ -33,18 +33,7 @@ const templateEmail = (link, name) => `
             font-size: large;
             line-height: 30px;
         }
-        .button{
-            margin-top: 40px;
-            text-decoration: none;
-            display: inline-block;
-            width: 230px;
-            height: 40px;
-            background-color: #6379F4;
-            font-size: large;
-            color: #ffff;
-            padding-top: 20px;
-            border-radius: 10px;
-        }
+        
         .footer{
             position:absolute;
             bottom: 5%;
@@ -67,14 +56,24 @@ const templateEmail = (link, name) => `
             Hi <strong>${name}, </strong> thank you for registering zwallet <br>
             Please verify this email by clicking button below
         </p>
-        <a href="${link}" class="button">Verify your email</a>
+        <a href="${link}" class="" style="
+        margin-top: 40px;
+        text-decoration: none;
+        display: inline-block;
+        width: 230px;
+        height: 40px;
+        background-color: #6379F4;
+        font-size: large;
+        color: #ffff;
+        padding-top: 18px;
+        border-radius: 10px;
+        ">Verify your email</a>
         <div class="footer">
-            <b>Or copy and paste this link into your browser</b> <br>
-            <a href="${link}" class="link">${link}</a>
+            <b>--------------------------</b> <br>
         </div>
     </div>
 </body>
 </html>
 `;
 
-export default templateEmail
+export default templateEmail;
