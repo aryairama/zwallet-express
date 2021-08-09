@@ -58,6 +58,12 @@ const getUser = () =>
       promiseResolveReject(resolve, reject, error, result);
     });
   });
+  
+  const updateSaldo = (saldo, user_id) => new Promise((resolve, reject) => {
+    connection.query("UPDATE users SET saldo = ? WHERE user_id = ?", [saldo, user_id], (err, result) => {
+      promiseResolveReject(resolve, reject, err, result)
+    })
+  })
 
 export default {
   register,
@@ -65,5 +71,6 @@ export default {
   activateAccount,
   createPIN,
   changePassword,
-  getUser
+  getUser,
+  updateSaldo
 };

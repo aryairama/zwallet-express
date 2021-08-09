@@ -8,10 +8,8 @@ import {
 } from '../validations/ValidatonUsers.js';
 import resultOfValidation from '../validations/ValidationResult.js';
 import constrollerUsers from '../controllers/ControllerUsers.js';
-import ControllerMain from '../controllers/ControllerMain.js';
 import { checkTokenResetPassword, checkTokenActivation } from '../middlewares/checkToken.js';
 import { Auth, Role } from '../middlewares/Auth.js';
-import { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp } from '../validations/MainValidation.js';
 const router = express.Router();
 
 router
@@ -27,7 +25,5 @@ router
 
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
-  .post('/topup', rulesFileUploud, rulesCreateImgTopUp(), topUpFieldRules(), resultOfValidation, ControllerMain.topUp)
-  // .post('/topup', Auth, Role('admin'))
 
 export default router;

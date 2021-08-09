@@ -3,6 +3,7 @@ import fileUpload from 'express-fileupload';
 import path from 'path';
 import 'dotenv/config';
 import userRouter from './src/routes/Users.js';
+import mainRouter from './src/routes/Main.js'
 import cors from 'cors'
 import { responseError } from './src/helpers/helpers.js';
 const app = Express();
@@ -14,6 +15,7 @@ app.use(fileUpload())
 app.use('/file', Express.static(path.resolve('./src/assets/img/')))
 
 app.use('/users', userRouter);
+app.use('/main', mainRouter)
 
 app.use('*', (req, res, next) => {
   next(new Error('Endpoint Not Found'));

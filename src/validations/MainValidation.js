@@ -45,4 +45,13 @@ const topUpFieldRules = () => [
     .withMessage("Please, explain at least with 10 characters"),
 ];
 
-export { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp };
+const statusRules = () => [
+  body("status")
+  .notEmpty()
+  .withMessage("Status update is empty")
+  .bail()
+  .isIn(['pending', 'approve', 'cancel'])
+  .withMessage("you entered the wrong status, the status can only be 'pending', 'approve', & 'cancel'")
+]
+
+export { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp, statusRules };
