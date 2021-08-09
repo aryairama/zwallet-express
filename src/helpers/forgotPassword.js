@@ -8,7 +8,7 @@ const forgotPassword = (toEmail, token, name) => {
       to: toEmail,
       subject: 'Password Reset',
       // html: email(process.envFRONT_END_ACTIVATION_URL + token, name)
-      html: templateForgotPassword(`${process.env.URL_FRONTEND}/forgot-password/${token}`, name),
+      html: templateForgotPassword(`${process.env.URL_FRONTEND}/resetpassword/${token}`, name),
       attachments: [
         {
           filename: 'forgotpassword.png',
