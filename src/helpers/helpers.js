@@ -18,7 +18,7 @@ const responsePagination = (res, status, statusCode, message, data, pagination) 
 };
 
 const responseError = (res, status, statusCode, message, error) => {
-  res.status(statusCode || 500).json({
+  res.status(statusCode).json({
     status,
     statusCode,
     message,
@@ -34,7 +34,7 @@ const promiseResolveReject = (resolve, reject, error, result) => {
   }
 };
 
-export {
+export default {
   response,
   responseError,
   promiseResolveReject,
