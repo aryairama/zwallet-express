@@ -163,15 +163,24 @@ const transfer = async (req, res, next) => {
               responseError(res, 'Error balance', 500, 'Error when changing sender balance', err);
             });
         } else {
-          response(
-            res,
-            'Transfer Failed',
-            200,
-            'Money transfer Failed, please try again later',
-            transferResult
-          );
+          response(res, 'Transfer Failed', 200, 'Money transfer Failed, please try again later', transferResult);
         }
       }
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+const checkPIN = async (req, res, next) => {
+  try {
+    const user_id = req.userLogin.user_id;
+    const {PIN} = req.body;
+    const user = await userModels.checkExistUser(user_id, 'user_id');
+    if (user[0].PIN === PIN) {
+      response(res, 'PIN accepted', 200, 'correct pin and accepted');
+    } else {
+      responseError(res, 'PIN rejected', 403, 'you entered the wrong pin', {});
     }
   } catch (err) {
     next(err);
@@ -183,4 +192,5 @@ export default {
   updatetransaction,
   getAllTransaction,
   transfer,
+  checkPIN,
 };

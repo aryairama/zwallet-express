@@ -69,4 +69,16 @@ const transferFielfRules = () => [
   .withMessage("Please, explain at least with 10 characters"),
 ]
 
-export { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp, statusRules, transferFielfRules };
+const checkpin = () => [
+  body('PIN')
+  .notEmpty()
+  .withMessage("Please insert your PIN")
+  .bail()
+  .isLength({ min: 6, max: 6 })
+  .withMessage('PIN must consist of 6 digits')
+  .bail()
+  .isNumeric()
+  .withMessage("PIN must be number"),
+]
+
+export { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp, statusRules, transferFielfRules, checkpin };
