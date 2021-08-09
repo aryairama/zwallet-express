@@ -2,6 +2,7 @@ import nodemailer from "../configs/nodemailer.js";
 import email from "../template/email.js";
 
 const sendEmail = (toEmail, token, name) => {
+  console.log(process.env.FRONT_END_ACTIVATION_URL);
   nodemailer
     .sendMail({
       from: `zWallet <${process.env.EMAIL_USER}>`,

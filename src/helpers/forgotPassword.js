@@ -6,26 +6,23 @@ const forgotPassword = (toEmail, token, name) => {
     .sendMail({
       from: `zWallet <${process.env.EMAIL_USER}>`,
       to: toEmail,
-      subject: "Password Reset",
+      subject: 'Password Reset',
       // html: email(process.envFRONT_END_ACTIVATION_URL + token, name)
-      html: templateForgotPassword(
-        `${process.env.URL_FRONTEND}/forgotPassword/${token}`,
-        name
-      ),
+      html: templateForgotPassword(`${process.env.URL_FRONTEND}/forgot-password/${token}`, name),
       attachments: [
         {
-          filename: "forgotpassword.png",
-          path: "./src/assets/img/forgotpassword.png",
-          cid: "forgotpw",
+          filename: 'forgotpassword.png',
+          path: './src/assets/img/forgotpassword.png',
+          cid: 'forgotpw',
         },
       ],
     })
     .then((result) => {
-      console.log("Nodemailer success");
+      console.log('Nodemailer success');
       console.log(result);
     })
     .catch((err) => {
-      console.log("Nodemailer Error" + err);
+      console.log('Nodemailer Error' + err);
     });
 };
 

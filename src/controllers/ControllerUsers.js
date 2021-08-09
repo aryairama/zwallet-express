@@ -16,10 +16,10 @@ const register = async (req, res, next) => {
     if (checkExistUser.length === 0) {
       const salt = await bcrypt.genSalt(10);
       let form = {
-        username: req.body.username,
+        last_name: req.body.last_name,
+        first_name: req.body.first_name,
         email: req.body.email,
         password: await bcrypt.hash(req.body.password, salt),
-        image: "user.jpg",
       };
       const addDataUser = await userModel.register(form);
       if (addDataUser.affectedRows) {
@@ -41,7 +41,7 @@ const register = async (req, res, next) => {
                 err
               );
             } else {
-              sendEmail(dataUser.email, token, form.username);
+              sendEmail(dataUser.email, token, `${form.first_name} ${form.last_name}`);
               dataUser.token = token;
               response(
                 res,
