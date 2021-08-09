@@ -1,106 +1,99 @@
-import { body } from "express-validator";
-import userModel from "../models/Users.js";
+import { body } from 'express-validator';
+import userModel from '../models/Users.js';
 
 const registerFieldRules = () => [
-  body("username")
+  body('first_name')
     .notEmpty()
-    .withMessage("Username cannot empty")
+    .withMessage('first_name cannot empty')
     .bail()
-    .isLength({ min: 4, max: 40 })
-    .withMessage("Username min 4 & max 40"),
-  body("email")
+    .isLength({ min: 3, max: 100 })
+    .withMessage('Username min 3 & max 100'),
+  body('last_name')
     .notEmpty()
-    .withMessage("Email cannot empty")
+    .withMessage('first_name cannot empty')
+    .bail()
+    .isLength({ min: 3, max: 100 })
+    .withMessage('Username min 3 & max 100'),
+  body('email')
+    .notEmpty()
+    .withMessage('Email cannot empty')
     .bail()
     .isEmail()
-    .withMessage("Your email is invalid")
+    .withMessage('Your email is invalid')
     .bail()
     .custom(async (value) => {
-      const existingEmail = await userModel.checkExistUser(value, "email");
+      const existingEmail = await userModel.checkExistUser(value, 'email');
       if (existingEmail.length > 0) {
-        throw new Error("e-mail already registered");
+        throw new Error('e-mail already registered');
       }
       return true;
     }),
-  body("password")
+  body('password')
     .notEmpty()
-    .withMessage("Password cannot empty")
+    .withMessage('Password cannot empty')
     .bail()
     .isLength({ min: 4, max: 15 })
-    .withMessage("Password min 4 & max 15"),
+    .withMessage('Password min 4 & max 15'),
 ];
 
 const PINRules = () => [
-  body("PIN")
+  body('PIN')
     .notEmpty()
     .withMessage("PIN can't empty")
     .bail()
     .isLength({ min: 6, max: 6 })
-    .withMessage("PIN must consist of 6 digits"),
-  body("email")
-    .notEmpty()
-    .withMessage("Email cannot empty")
-    .bail()
-    .isEmail()
-    .withMessage("Your email is invalid"),
+    .withMessage('PIN must consist of 6 digits'),
+  body('email').notEmpty().withMessage('Email cannot empty').bail().isEmail().withMessage('Your email is invalid'),
 ];
 
 const emailRules = () => [
-  body("email")
+  body('email')
     .notEmpty()
-    .withMessage("Email cannot empty")
+    .withMessage('Email cannot empty')
     .bail()
     .isEmail()
-    .withMessage("Your email is invalid")
+    .withMessage('Your email is invalid')
     .bail()
     .custom(async (value) => {
-      const existingEmail = await userModel.checkExistUser(value, "email");
+      const existingEmail = await userModel.checkExistUser(value, 'email');
       if (existingEmail.length <= 0) {
-        throw new Error("e-mail not found");
+        throw new Error('e-mail not found');
       }
       return true;
     }),
 ];
 
 const changePasswordRules = () => [
-  body("password")
+  body('password')
     .notEmpty()
-    .withMessage("Please insert new password")
+    .withMessage('Please insert new password')
     .bail()
     .isLength({ min: 4, max: 15 })
-    .withMessage("Password min 4 & max 15"),
-  body("password2")
+    .withMessage('Password min 4 & max 15'),
+  body('password2')
     .notEmpty()
-    .withMessage("Please insert compare password")
+    .withMessage('Please insert compare password')
     .bail()
     .isLength({ min: 4, max: 15 })
-    .withMessage("Password min 4 & max 15"),
+    .withMessage('Password min 4 & max 15'),
 ];
 
 const loginFieldRules = () => [
-  body("email")
+  body('email')
     .notEmpty()
-    .withMessage("Please enter your email")
+    .withMessage('Please enter your email')
     .bail()
     .isEmail()
-    .withMessage("Your email is invalid")
+    .withMessage('Your email is invalid')
     .bail()
     .custom(async (value) => {
-      const existingEmail = await userModel.checkExistUser(value, "email");
+      const existingEmail = await userModel.checkExistUser(value, 'email');
       if (existingEmail.length <= 0) {
-        throw new Error("Your email not found");
+        throw new Error('Your email not found');
       }
       return true;
     }),
-  body("password")
-    .notEmpty()
-    .withMessage("Please enter your password")
+  body('password').notEmpty().withMessage('Please enter your password'),
 ];
 
-export {
-  registerFieldRules,
-  PINRules,
-  emailRules,
-  changePasswordRules,
-  loginFieldRules,
-};
+export { registerFieldRules, PINRules, emailRules, changePasswordRules, loginFieldRules };
