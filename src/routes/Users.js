@@ -15,6 +15,8 @@ const router = express.Router();
 router
   .post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
   .post('/login', loginFieldRules(), resultOfValidation, constrollerUsers.login)
+  .delete('/logout', Auth, Role('member', 'admin'), constrollerUsers.logout)
+  .post('/refreshtoken', constrollerUsers.refreshToken)
   .get('/activation/:token', checkTokenActivation, constrollerUsers.activateAccount)
   .get('/show/:id', Auth, Role('member', 'admin'), constrollerUsers.showUser)
 
@@ -24,6 +26,6 @@ router
   .post('/changepassword', changePasswordRules(), resultOfValidation, constrollerUsers.changePassword)
 
   // main feature
-  .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
+  .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN);
 
 export default router;
