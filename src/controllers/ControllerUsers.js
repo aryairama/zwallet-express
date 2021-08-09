@@ -82,15 +82,16 @@ const forgotPW = async (req, res, next) => {
   try {
     const { email } = req.body;
     const user = await userModel.checkExistUser(email, 'email');
-    const username = user[0].username;
+    const first_name = user[0].first_name;
+    const last_name = user[0].last_name;
     const id = user[0].user_id;
 
-    Jwt.sign({ id, email, username }, process.env.FORGOT_PW_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
+    Jwt.sign({ id, email}, process.env.FORGOT_PW_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
       if (err) {
         responseError(res, 'JWT Error', 500, 'Failed created forgot password token', err);
       } else {
         redis.set(`JWTFORGOT-${id}`, token);
-        forgotPassword(email, token, username);
+        forgotPassword(email, token, `${first_name} ${last_name}`);
         response(res, 'Success', 200, 'Successfully create token, check email for reset password');
       }
     });
