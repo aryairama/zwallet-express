@@ -6,7 +6,7 @@ import userRouter from './src/routes/Users.js';
 import cors from 'cors'
 import { responseError } from './src/helpers/helpers.js';
 const app = Express();
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(Express.json());
