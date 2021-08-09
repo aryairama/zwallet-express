@@ -8,11 +8,12 @@ export const Auth = (req, res, next) => {
       return responseError(res, 'Authorized failed', 401, 'Server need accessToken', []);
     }
     const token = accessToken.split(' ')[1];
-    Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+    Jwt.verify(token, process.env.ACCESS_SECRET_KEY, (err, decode) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
           return responseError(res, 'Authorized failed', 401, 'token expired', []);
-        } if (err.name === 'JsonWebTokenError') {
+        }
+        if (err.name === 'JsonWebTokenError') {
           return responseError(res, 'Authorized failed', 401, 'token invalid', []);
         }
         return responseError(res, 'Authorized failed', 401, 'token not active', []);

@@ -1,18 +1,15 @@
-import { response, responseError } from "../helpers/helpers.js";
-import userModel from "../models/Users.js";
-import bcrypt from "bcrypt";
-import Jwt from "jsonwebtoken";
-import sendEmail from "../helpers/sendEmail.js";
-import forgotPassword from "../helpers/forgotPassword.js";
-import { redis } from "../configs/redis.js";
-import { genAccessToken, genRefreshToken } from "../helpers/jwt.js";
+import { response, responseError } from '../helpers/helpers.js';
+import userModel from '../models/Users.js';
+import bcrypt from 'bcrypt';
+import Jwt from 'jsonwebtoken';
+import sendEmail from '../helpers/sendEmail.js';
+import forgotPassword from '../helpers/forgotPassword.js';
+import { redis } from '../configs/redis.js';
+import { genAccessToken, genRefreshToken } from '../helpers/jwt.js';
 
 const register = async (req, res, next) => {
   try {
-    const checkExistUser = await userModel.checkExistUser(
-      req.body.email,
-      "email"
-    );
+    const checkExistUser = await userModel.checkExistUser(req.body.email, 'email');
     if (checkExistUser.length === 0) {
       const salt = await bcrypt.genSalt(10);
       let form = {
@@ -23,42 +20,31 @@ const register = async (req, res, next) => {
       };
       const addDataUser = await userModel.register(form);
       if (addDataUser.affectedRows) {
-        const user = await userModel.checkExistUser(form.email, "email");
+        const user = await userModel.checkExistUser(form.email, 'email');
         const dataUser = user[0];
-        const id = dataUser["user_id"];
-        delete dataUser["password"];
-        Jwt.sign(
-          { ...dataUser },
-          process.env.VERIF_SECRET_KEY,
-          { expiresIn: "24h" },
-          (err, token) => {
-            if (err) {
-              responseError(
-                res,
-                "Error",
-                500,
-                "Failed create activation token",
-                err
-              );
-            } else {
-              sendEmail(dataUser.email, token, `${form.first_name} ${form.last_name}`);
-              dataUser.token = token;
-              response(
-                res,
-                "success",
-                200,
-                `successfully added user data, we send link activation to ${dataUser.email}`,
-                dataUser
-              );
-              redis.set(`JWTACTIVATION-${id}`, token);
-            }
+        const id = dataUser['user_id'];
+        delete dataUser['password'];
+        Jwt.sign({ ...dataUser }, process.env.VERIF_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
+          if (err) {
+            responseError(res, 'Error', 500, 'Failed create activation token', err);
+          } else {
+            sendEmail(dataUser.email, token, `${form.first_name} ${form.last_name}`);
+            dataUser.token = token;
+            response(
+              res,
+              'success',
+              200,
+              `successfully added user data, we send link activation to ${dataUser.email}`,
+              dataUser
+            );
+            redis.set(`JWTACTIVATION-${id}`, token);
           }
-        );
+        });
       } else {
-        responseError(res, "Error", 500, "Invalid input", {});
+        responseError(res, 'Error', 500, 'Invalid input', {});
       }
     } else {
-      responseError(res, "Error", 500, "e-mail already registered", {});
+      responseError(res, 'Error', 500, 'e-mail already registered', {});
     }
   } catch (err) {
     next(err);
@@ -70,10 +56,10 @@ const activateAccount = (req, res) => {
   userModel
     .activateAccount(email)
     .then(() => {
-      response(res, "Success", 200, "Successfully activate account");
+      response(res, 'Success', 200, 'Successfully activate account');
     })
     .catch((err) => {
-      responseError(res, "Error", 500, "Failed activate account", err);
+      responseError(res, 'Error', 500, 'Failed activate account', err);
     });
 };
 
@@ -82,9 +68,9 @@ const createPIN = async (req, res, next) => {
     const { PIN, email } = req.body;
     const createUserPIN = await userModel.createPIN(PIN, email);
     if (createUserPIN.affectedRows) {
-      response(res, "Success", 200, "Successfully created user PIN");
+      response(res, 'Success', 200, 'Successfully created user PIN');
     } else {
-      responseError(res, "Error", 500, "Failed created user PIN");
+      responseError(res, 'Error', 500, 'Failed created user PIN');
       console.log(createUserPIN);
     }
   } catch (err) {
@@ -95,35 +81,19 @@ const createPIN = async (req, res, next) => {
 const forgotPW = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const user = await userModel.checkExistUser(email, "email");
+    const user = await userModel.checkExistUser(email, 'email');
     const username = user[0].username;
     const id = user[0].user_id;
 
-    Jwt.sign(
-      { id, email, username },
-      process.env.FORGOT_PW_SECRET_KEY,
-      { expiresIn: "24h" },
-      (err, token) => {
-        if (err) {
-          responseError(
-            res,
-            "JWT Error",
-            500,
-            "Failed created forgot password token",
-            err
-          );
-        } else {
-          redis.set(`JWTFORGOT-${id}`, token);
-          forgotPassword(email, token, username);
-          response(
-            res,
-            "Success",
-            200,
-            "Successfully create token, check email for reset password"
-          );
-        }
+    Jwt.sign({ id, email, username }, process.env.FORGOT_PW_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
+      if (err) {
+        responseError(res, 'JWT Error', 500, 'Failed created forgot password token', err);
+      } else {
+        redis.set(`JWTFORGOT-${id}`, token);
+        forgotPassword(email, token, username);
+        response(res, 'Success', 200, 'Successfully create token, check email for reset password');
       }
-    );
+    });
   } catch (err) {
     next(err);
   }
@@ -134,9 +104,9 @@ const resetPW = (req, res) => {
   const email = req.email;
   response(
     res,
-    "Success!",
+    'Success!',
     200,
-    "Now, you can change your password. Please use a strong and easy to remember your password",
+    'Now, you can change your password. Please use a strong and easy to remember your password',
     { id_user: id, email }
   );
 };
@@ -145,13 +115,7 @@ const changePassword = async (req, res, next) => {
   try {
     const { password, password2, id } = req.body;
     if (password !== password2) {
-      responseError(
-        res,
-        "Not Compare!",
-        400,
-        "Your password is not compare",
-        {}
-      );
+      responseError(res, 'Not Compare!', 400, 'Your password is not compare', {});
     } else {
       const salt = await bcrypt.genSalt(10);
       const data = {
@@ -162,21 +126,15 @@ const changePassword = async (req, res, next) => {
         .then((result) => {
           response(
             res,
-            "Success change password",
+            'Success change password',
             200,
-            "your password has been changed successfully! Please login with your new password",
+            'your password has been changed successfully! Please login with your new password',
             result
           );
           redis.del(`JWTFORGOT-${id}`);
         })
         .catch((err) => {
-          responseError(
-            res,
-            "Error change password",
-            500,
-            "Password failed to change, please try again later",
-            err
-          );
+          responseError(res, 'Error change password', 500, 'Password failed to change, please try again later', err);
         });
     }
   } catch (err) {
@@ -188,12 +146,12 @@ const showUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     await userModel
-      .checkExistUser(id, "user_id")
+      .checkExistUser(id, 'user_id')
       .then((result) => {
-        response(res, "Success", 200, "Successfully get data user", result);
+        response(res, 'Success', 200, 'Successfully get data user', result);
       })
       .catch((err) => {
-        responseError(res, "Error get data", 500, "Error during get data", err);
+        responseError(res, 'Error get data', 500, 'Error during get data', err);
       });
   } catch (err) {
     next(err);
@@ -203,45 +161,83 @@ const showUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const dataUser = await userModel.checkExistUser(email, "email");
+    const dataUser = await userModel.checkExistUser(email, 'email');
     const pw = dataUser[0].password;
     if (dataUser[0].email_verified === 0) {
-      responseError(res, "Email not verified", 400, "Your email has not been verified, please verify first!")
+      responseError(res, 'Email not verified', 400, 'Your email has not been verified, please verify first!');
     } else {
       bcrypt.compare(password, pw, async (err, resCompare) => {
         if (!err) {
           if (resCompare) {
             delete dataUser[0].password;
-            const accessToken = await genAccessToken(
-              { ...dataUser[0] },
-              { expiresIn: 60 * 60 }
-            );
-            const refreshToken = await genRefreshToken(
-              { ...dataUser[0] },
-              { expiresIn: parseInt(60 * 60 * 2) }
-            );
+            const accessToken = await genAccessToken({ ...dataUser[0] }, { expiresIn: 60 * 60 });
+            const refreshToken = await genRefreshToken({ ...dataUser[0] }, { expiresIn: parseInt(60 * 60 * 2) });
             // const refreshToken = await genRefreshToken(user, { expiresIn: 60 * 60 * 2 });
-            response(res, "Login Success", 200, "Login successfull", {
+            response(res, 'Login Success', 200, 'Login successfull', {
               ...dataUser[0],
               accessToken,
               refreshToken,
             });
           } else {
-            responseError(res, "Password wrong", 400, "Your password is wrong");
+            responseError(res, 'Password wrong', 400, 'Your password is wrong');
           }
         } else {
-          responseError(
-            res,
-            "Bcrypt Error",
-            500,
-            "Error during matching data",
-            err
-          );
+          responseError(res, 'Bcrypt Error', 500, 'Error during matching data', err);
         }
       });
     }
   } catch (err) {
     next(err);
+  }
+};
+
+const logout = (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-unused-vars
+    redis.del(`jwtRefToken-${req.userLogin.user_id}`, (error, result) => {
+      if (error) {
+        next(error);
+      } else {
+        response(res, 'Logout', 200, 'Logout success', []);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const refreshToken = async (req, res, next) => {
+  try {
+    const refToken = req.body.refreshToken;
+    if (!refToken) {
+      return responseError(res, 'Authorized failed', 401, 'Server need refreshToken', []);
+    }
+    Jwt.verify(refToken, process.env.REFRESH_TOKEN_SECRET_KEY, (err, decode) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          responseError(res, 'Authorized failed', 401, 'token expired', []);
+        } else if (err.name === 'JsonWebTokenError') {
+          responseError(res, 'Authorized failed', 401, 'token invalid', []);
+        } else {
+          responseError(res, 'Authorized failed', 401, 'token not active', []);
+        }
+      }
+      // eslint-disable-next-line no-unused-vars
+      const cacheRefToken = redis.get(`jwtRefToken-${decode.user_id}`, async (error, cacheToken) => {
+        if (cacheToken === refToken) {
+          delete decode.iat;
+          delete decode.exp;
+          redis.del(`jwtRefToken-${decode.user_id}`);
+          const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 });
+          const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 2 });
+          response(res, 'Success', 200, 'AccessToken', { accessToken, refreshToken: newRefToken });
+        } else {
+          responseError(res, 'Authorized failed', 403, 'Wrong refreshToken', []);
+        }
+      });
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -254,4 +250,6 @@ export default {
   changePassword,
   showUser,
   login,
+  logout,
+  refreshToken,
 };
