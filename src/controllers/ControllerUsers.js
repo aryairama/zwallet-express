@@ -65,13 +65,12 @@ const activateAccount = (req, res) => {
 
 const createPIN = async (req, res, next) => {
   try {
-    const { PIN, email } = req.body;
-    const createUserPIN = await userModel.createPIN(PIN, email);
+    const { PIN } = req.body;
+    const createUserPIN = await userModel.createPIN(PIN, req.userLogin.email);
     if (createUserPIN.affectedRows) {
       response(res, 'Success', 200, 'Successfully created user PIN');
     } else {
       responseError(res, 'Error', 500, 'Failed created user PIN');
-      console.log(createUserPIN);
     }
   } catch (err) {
     next(err);
