@@ -37,12 +37,6 @@ const topUpFieldRules = () => [
     .bail()
     .isNumeric()
     .withMessage("nominal must be a number"),
-  body("description")
-    .notEmpty()
-    .withMessage("You have to explain your top up")
-    .bail()
-    .isLength({ min: 10 })
-    .withMessage("Please, explain at least with 10 characters"),
 ];
 
 const statusRules = () => [
@@ -54,4 +48,25 @@ const statusRules = () => [
   .withMessage("you entered the wrong status, the status can only be 'pending', 'approve', & 'cancel'")
 ]
 
-export { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp, statusRules };
+const transferFielfRules = () => [
+  body("user_id")
+  .notEmpty()
+  .withMessage("user_is empty")
+  .bail()
+  .isNumeric()
+  .withMessage("Invalid user_id"),
+  body("user_reciever")
+  .notEmpty()
+  .withMessage("recipient can't empty"),
+  body("amount")
+  .notEmpty()
+  .withMessage("Please fill in the amount of money you want to transfer"),
+  body("description")
+  .notEmpty()
+  .withMessage("You have to explain your top up")
+  .bail()
+  .isLength({ min: 10 })
+  .withMessage("Please, explain at least with 10 characters"),
+]
+
+export { topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp, statusRules, transferFielfRules };
