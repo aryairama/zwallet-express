@@ -45,8 +45,7 @@ const PINRules = () => [
     .withMessage('PIN must consist of 6 digits')
     .bail()
     .isNumeric()
-    .withMessage("PIN must be number"),
-  body('email').notEmpty().withMessage('Email cannot empty').bail().isEmail().withMessage('Your email is invalid'),
+    .withMessage("PIN must be number")
 ];
 
 const emailRules = () => [
