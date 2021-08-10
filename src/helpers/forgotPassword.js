@@ -1,5 +1,5 @@
-import nodemailer from '../configs/nodemailer.js'
-import templateForgotPassword from "../template/templateForgotPassword.js";
+import nodemailer from '../configs/nodemailer.js';
+import templateForgotPassword from '../template/templateForgotPassword.js';
 
 const forgotPassword = (toEmail, token, name) => {
   nodemailer
@@ -22,7 +22,7 @@ const forgotPassword = (toEmail, token, name) => {
       console.log(result);
     })
     .catch((err) => {
-      console.log('Nodemailer Error' + err);
+      console.log(`Nodemailer Error${err}`);
     });
 };
 
