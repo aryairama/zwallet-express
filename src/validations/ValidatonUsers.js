@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import userModel from '../models/Users.js';
 
 const registerFieldRules = () => [
@@ -45,7 +45,6 @@ const registerEmail = () => [
 const updateEmail = () => [
   body('email')
     .optional({ checkFalsy: true })
-    .bail()
     .isEmail()
     .withMessage('Your email is invalid')
     .bail()
@@ -70,8 +69,7 @@ const rulesFileUploud = (req, res, next) => {
 
 const rulesUpdateImageProfile = () => [
   body('image')
-    .optional({ checkFalsy: false })
-    .bail()
+    .optional({ checkFalsy: true })
     .custom((value) => {
       if (value.mimetype !== 'image/png' && value.mimetype !== 'image/jpeg') {
         throw new Error('image must be jpg or png');
@@ -149,6 +147,45 @@ const loginFieldRules = () => [
   body('password').notEmpty().withMessage('Please enter your password'),
 ];
 
+const rulesRead = () => [
+  query('limit')
+    .optional({ nullable: true })
+    .isNumeric()
+    .withMessage('limit must be number')
+    .bail()
+    .isFloat({ min: 1 })
+    .withMessage('limit must be more than 0'),
+  query('page')
+    .optional({ nullable: true })
+    .isNumeric()
+    .withMessage('page must be number')
+    .bail()
+    .isFloat({ min: 1 })
+    .withMessage('page must be more than 0'),
+  query('fieldOrder')
+    .optional({ nullable: true })
+    .notEmpty()
+    .withMessage('fieldOrder is required')
+    .bail()
+    .isLength({ min: 1 })
+    .withMessage('fieldOrder must be more than 0'),
+];
+
+const updatePassword = () => [
+  body('new_password')
+    .notEmpty()
+    .withMessage('Please insert compare password')
+    .bail()
+    .isLength({ min: 4, max: 15 })
+    .withMessage('Password min 4 & max 15'),
+  body('old_password')
+    .notEmpty()
+    .withMessage('Please insert compare password')
+    .bail()
+    .isLength({ min: 4, max: 15 })
+    .withMessage('Password min 4 & max 15'),
+];
+
 export {
   registerFieldRules,
   PINRules,
@@ -160,4 +197,6 @@ export {
   rulesPassword,
   updateEmail,
   registerEmail,
+  rulesRead,
+  updatePassword,
 };

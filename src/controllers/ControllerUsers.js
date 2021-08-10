@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable camelcase */
 /* eslint-disable radix */
 import bcrypt from 'bcrypt';
@@ -5,7 +6,7 @@ import Jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
-import { response, responseError } from '../helpers/helpers.js';
+import { response, responseError, responsePagination } from '../helpers/helpers.js';
 import userModel from '../models/Users.js';
 import sendEmail from '../helpers/sendEmail.js';
 import forgotPassword from '../helpers/forgotPassword.js';
@@ -20,6 +21,7 @@ const register = async (req, res, next) => {
       const form = {
         last_name: req.body.last_name,
         first_name: req.body.first_name,
+        fullname: `${req.body.first_name} ${req.body.last_name}`,
         email: req.body.email,
         password: await bcrypt.hash(req.body.password, salt),
       };
@@ -249,11 +251,11 @@ const refreshToken = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const existUser = await userModel.checkExistUser(req.userLogin.user_id, 'user_id');
-    console.log(existUser.length);
     if (existUser.length > 0) {
       let data = {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
+        fullname: `${req.body.first_name} ${req.body.last_name}`,
       };
       if (req.body.email) {
         data = { ...data, email: req.body.email };
@@ -270,13 +272,99 @@ const updateProfile = async (req, res, next) => {
         }
       }
       const changeDataUser = await userModel.changePassword(data, req.userLogin.user_id);
-      console.log(data);
       if (changeDataUser.affectedRows) {
         return response(res, 'success', 200, 'successfully updated user data', data);
       }
       return responseError(res, 'error', 500, 'Update failed', {});
     }
     return responseError(res, 'Failed', 404, 'User not found', {});
+  } catch (error) {
+    next(error);
+  }
+};
+
+const readDataUser = async (req, res, next) => {
+  const search = req.query.search || '';
+  let order = req.query.order || '';
+  if (order.toUpperCase() === 'ASC') {
+    order = 'ASC';
+  } else if (order.toUpperCase() === 'DESC') {
+    order = 'DESC';
+  } else {
+    order = 'DESC';
+  }
+  let { fieldOrder } = req.query;
+  if (fieldOrder) {
+    if (fieldOrder.toLowerCase() === 'last_name') {
+      fieldOrder = 'last_name';
+    } else if (fieldOrder.toLowerCase() === 'first_name') {
+      fieldOrder = 'first_name';
+    } else {
+      fieldOrder = 'user_id';
+    }
+  } else {
+    fieldOrder = 'user_id';
+  }
+  let dataUsers;
+  let pagination;
+  try {
+    const lengthRecord = await userModel.readUser(search, order, fieldOrder, req.userLogin.user_id);
+    if (lengthRecord.length > 0) {
+      const limit = req.query.limit || 5;
+      const pages = Math.ceil(lengthRecord.length / limit);
+      let page = req.query.page || 1;
+      let nextPage = parseInt(page, 10) + 1;
+      let prevPage = parseInt(page, 10) - 1;
+      if (nextPage > pages) {
+        nextPage = pages;
+      }
+      if (prevPage < 1) {
+        prevPage = 1;
+      }
+      if (page > pages) {
+        page = pages;
+      } else if (page < 1) {
+        page = 1;
+      }
+      const start = (page - 1) * limit;
+      pagination = {
+        countData: lengthRecord.length,
+        pages,
+        limit: parseInt(limit, 10),
+        curentPage: parseInt(page, 10),
+        nextPage,
+        prevPage,
+      };
+      dataUsers = await userModel.readUser(search, order, fieldOrder, req.userLogin.user_id, start, limit);
+      responsePagination(res, 'success', 200, 'data users', dataUsers, pagination);
+    } else {
+      response(res, 'success', 200, 'data users', lengthRecord);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updatePassword = async (req, res, next) => {
+  try {
+    const getDataUser = await userModel.checkExistUser(req.userLogin.user_id, 'user_id');
+    if (getDataUser.length > 0) {
+      const comparePassword = await bcrypt.compare(req.body.old_password, getDataUser[0].password);
+      if (comparePassword) {
+        const salt = await bcrypt.genSalt(10);
+        const changePassword = await userModel.changePassword(
+          { password: await bcrypt.hash(req.body.new_password, salt) },
+          req.userLogin.user_id,
+        );
+        if (changePassword.affectedRows) {
+          return response(res, 'success', 200, 'successfully updated user data');
+        }
+      } else {
+        return response(res, 'failed', 403, "passwords don't match", []);
+      }
+    } else {
+      return response(res, 'failed', 404, 'the data you want to update does not exist', []);
+    }
   } catch (error) {
     next(error);
   }
@@ -294,4 +382,6 @@ export default {
   logout,
   refreshToken,
   updateProfile,
+  readDataUser,
+  updatePassword,
 };

@@ -10,6 +10,8 @@ import {
   rulesPassword,
   updateEmail,
   registerEmail,
+  rulesRead,
+  updatePassword,
 } from '../validations/ValidatonUsers.js';
 import resultOfValidation from '../validations/ValidationResult.js';
 import constrollerUsers from '../controllers/ControllerUsers.js';
@@ -19,6 +21,7 @@ import { Auth, Role } from '../middlewares/Auth.js';
 const router = express.Router();
 
 router
+  .get('/', Auth, Role('member', 'admin'), rulesRead(), resultOfValidation, constrollerUsers.readDataUser)
   .post('/', registerFieldRules(), rulesPassword(), registerEmail(), resultOfValidation, constrollerUsers.register)
   .put(
     '/',
@@ -40,6 +43,7 @@ router
   .post('/forgotpassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
   .get('/forgotpassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
   .post('/changepassword', changePasswordRules(), resultOfValidation, constrollerUsers.changePassword)
+  .post('/updatepassword', Auth, Role('member', 'admin'), updatePassword(), resultOfValidation, constrollerUsers.updatePassword)
 
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN);
