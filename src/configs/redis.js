@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+
 export const redis = new Redis({
   port: process.env.PORT_REDIS,
   host: process.env.HOST_REDIS,
