@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { response, responseError } from '../helpers/helpers.js';
+import { response, responseError, responsePagination } from '../helpers/helpers.js';
 import mainModels from '../models/Main.js';
 import userModels from '../models/Users.js';
 
@@ -37,10 +37,70 @@ const topUp = async (req, res, next) => {
 
 const getAllTransaction = async (req, res, next) => {
   try {
+    const userId = req.userLogin.user_id;
+
+    const keyword = req.query.keyword || '';
+    const limit = req.query.limit || 5;
+    let page = req.query.page || 1;
+    let order = req.query.order || '';
+    let { fieldOrder } = req.query;
+    let nextPage = parseInt(page) + 1;
+    let prevPage = page - 1;
+    let start = 0;
+
+    if (page > 1) {
+      start = (page - 1) * limit;
+    }
+
+    if (order.toUpperCase() === 'ASC') {
+      order = 'ASC';
+    } else if (order.toUpperCase() === 'DESC') {
+      order = 'DESC';
+    } else {
+      order = 'DESC';
+    }
+
+    if (fieldOrder) {
+      if (fieldOrder.toLowerCase() === 'type') {
+        fieldOrder = 'transaction_type';
+      } else if (fieldOrder.toLowerCase() === 'amount') {
+        fieldOrder = 'amount';
+      } else {
+        fieldOrder = 'transaction_id';
+      }
+    } else {
+      fieldOrder = 'transaction_id';
+    }
+
     await mainModels
-      .getAllTransaction()
-      .then((result) => {
-        response(res, 'Sucess', 200, 'Successfully get all data transaction', result);
+      .getAllTransaction(keyword, userId)
+      .then(async (result) => {
+        const countData = result[0].transactionAmount;
+        const pages = countData / limit;
+        if (nextPage > pages) {
+          nextPage = Math.ceil(pages);
+        }
+        if (page > pages) {
+          page = Math.ceil(pages);
+          prevPage = page - 1;
+          start = (page - 1) * limit;
+        }
+        if (countData > 0) {
+          const dataTransaction = await mainModels.getAllTransaction(keyword, userId, order, fieldOrder, start, limit);
+          const pagination = {
+            countData,
+            pages: Math.ceil(pages),
+            limit,
+            fieldOrder,
+            order,
+            currentPage: page,
+            nextPage,
+            prevPage,
+          };
+          responsePagination(res, 'success', 200, 'All data successfully loaded', dataTransaction, pagination);
+        } else {
+          responseError(res, 'Data Not Found', 403, 'Data not found');
+        }
       })
       .catch((err) => {
         responseError(res, 'Error get dat', 500, 'Error during get data form database', err);
@@ -126,16 +186,9 @@ const transfer = async (req, res, next) => {
       const transferResult = {
         amount,
         senderBalance,
-        time_transfer:
-            `${monthNames[time.getMonth()]
-            } ${
-              time.getDate()
-            },${
-              time.getFullYear()
-            } - ${
-              time.getHours()
-            }.${
-              time.getMinutes()}`,
+        time_transfer: `${
+          monthNames[time.getMonth()]
+        } ${time.getDate()},${time.getFullYear()} - ${time.getHours()}.${time.getMinutes()}`,
         description,
         recipient: {
           name: `${recipient[0].first_name} ${recipient[0].last_name}`,
