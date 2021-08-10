@@ -10,6 +10,7 @@ import {
   rulesPassword,
   updateEmail,
   registerEmail,
+  rulesRead,
 } from '../validations/ValidatonUsers.js';
 import resultOfValidation from '../validations/ValidationResult.js';
 import constrollerUsers from '../controllers/ControllerUsers.js';
@@ -19,6 +20,7 @@ import { Auth, Role } from '../middlewares/Auth.js';
 const router = express.Router();
 
 router
+  .get('/', Auth, Role('member', 'admin'), rulesRead(), resultOfValidation, constrollerUsers.readDataUser)
   .post('/', registerFieldRules(), rulesPassword(), registerEmail(), resultOfValidation, constrollerUsers.register)
   .put(
     '/',

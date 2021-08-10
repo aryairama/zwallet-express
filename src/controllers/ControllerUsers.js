@@ -5,7 +5,7 @@ import Jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
-import { response, responseError } from '../helpers/helpers.js';
+import { response, responseError, responsePagination } from '../helpers/helpers.js';
 import userModel from '../models/Users.js';
 import sendEmail from '../helpers/sendEmail.js';
 import forgotPassword from '../helpers/forgotPassword.js';
@@ -20,6 +20,7 @@ const register = async (req, res, next) => {
       const form = {
         last_name: req.body.last_name,
         first_name: req.body.first_name,
+        fullname: `${req.body.first_name} ${req.body.last_name}`,
         email: req.body.email,
         password: await bcrypt.hash(req.body.password, salt),
       };
@@ -253,6 +254,7 @@ const updateProfile = async (req, res, next) => {
       let data = {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
+        fullname: `${req.body.first_name} ${req.body.last_name}`,
       };
       if (req.body.email) {
         data = { ...data, email: req.body.email };
@@ -280,6 +282,68 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const readDataUser = async (req, res, next) => {
+  const search = req.query.search || '';
+  let order = req.query.order || '';
+  if (order.toUpperCase() === 'ASC') {
+    order = 'ASC';
+  } else if (order.toUpperCase() === 'DESC') {
+    order = 'DESC';
+  } else {
+    order = 'DESC';
+  }
+  let { fieldOrder } = req.query;
+  if (fieldOrder) {
+    if (fieldOrder.toLowerCase() === 'last_name') {
+      fieldOrder = 'last_name';
+    } else if (fieldOrder.toLowerCase() === 'first_name') {
+      fieldOrder = 'first_name';
+    } else {
+      fieldOrder = 'user_id';
+    }
+  } else {
+    fieldOrder = 'user_id';
+  }
+  let dataUsers;
+  let pagination;
+  try {
+    const lengthRecord = await userModel.readUser(search, order, fieldOrder);
+    if (lengthRecord.length > 0) {
+      const limit = req.query.limit || 5;
+      const pages = Math.ceil(lengthRecord.length / limit);
+      let page = req.query.page || 1;
+      let nextPage = parseInt(page, 10) + 1;
+      let prevPage = parseInt(page, 10) - 1;
+      if (nextPage > pages) {
+        nextPage = pages;
+      }
+      if (prevPage < 1) {
+        prevPage = 1;
+      }
+      if (page > pages) {
+        page = pages;
+      } else if (page < 1) {
+        page = 1;
+      }
+      const start = (page - 1) * limit;
+      pagination = {
+        countData: lengthRecord.length,
+        pages,
+        limit: parseInt(limit, 10),
+        curentPage: parseInt(page, 10),
+        nextPage,
+        prevPage,
+      };
+      dataUsers = await userModel.readUser(search, order, fieldOrder, start, limit);
+      responsePagination(res, 'success', 200, 'data users', dataUsers, pagination);
+    } else {
+      response(res, 'success', 200, 'data users', lengthRecord);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   activateAccount,
@@ -292,4 +356,5 @@ export default {
   logout,
   refreshToken,
   updateProfile,
+  readDataUser,
 };
