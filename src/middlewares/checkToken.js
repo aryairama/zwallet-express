@@ -1,32 +1,34 @@
-import jwt from "jsonwebtoken";
-import { responseError } from "../helpers/helpers.js";
-import Redis from "ioredis";
+/* eslint-disable no-shadow */
+import jwt from 'jsonwebtoken';
+import Redis from 'ioredis';
+import { responseError } from '../helpers/helpers.js';
+
 const redis = new Redis();
 
 const checkTokenResetPassword = (req, res, next) => {
   const { token } = req.params;
   jwt.verify(token, process.env.FORGOT_PW_SECRET_KEY, (err, decoded) => {
     if (err) {
-      if (err.name === "TokenExpiredError") {
+      if (err.name === 'TokenExpiredError') {
         responseError(
           res,
-          "Token Expired !",
+          'Token Expired !',
           400,
-          "Token is expired, please request forgot password again to generate a new token"
+          'Token is expired, please request forgot password again to generate a new token',
         );
-      } else if (err.name === "JsonWebTokenError") {
+      } else if (err.name === 'JsonWebTokenError') {
         responseError(
           res,
-          "Token Invalid",
+          'Token Invalid',
           400,
-          "Token is invalid, please request forgot password again to generate a valid token"
+          'Token is invalid, please request forgot password again to generate a valid token',
         );
       } else {
         responseError(
           res,
-          "Token Unactive",
+          'Token Unactive',
           400,
-          "Token is Unactive, please request forgot password again to generate a active token"
+          'Token is Unactive, please request forgot password again to generate a active token',
         );
       }
     } else {
@@ -34,24 +36,22 @@ const checkTokenResetPassword = (req, res, next) => {
         if (err) {
           responseError(
             res,
-            "Empty key redis",
+            'Empty key redis',
             400,
             "you didn't request to reset password",
-            err
+            err,
           );
+        } else if (token === redisToken) {
+          req.id = decoded.id;
+          req.email = decoded.email;
+          next();
         } else {
-          if (token === redisToken) {
-            req.id = decoded.id;
-            req.email = decoded.email;
-            next();
-          } else {
-            responseError(
-              res,
-              "Token is not compare",
-              400,
-              "Your token is invalid"
-            );
-          }
+          responseError(
+            res,
+            'Token is not compare',
+            400,
+            'Your token is invalid',
+          );
         }
       });
     }
@@ -62,26 +62,26 @@ const checkTokenActivation = (req, res, next) => {
   const { token } = req.params;
   jwt.verify(token, process.env.VERIF_SECRET_KEY, (err, decoded) => {
     if (err) {
-      if (err.name === "TokenExpiredError") {
+      if (err.name === 'TokenExpiredError') {
         responseError(
           res,
-          "Token Expired !",
+          'Token Expired !',
           400,
-          "Token is expired, please request activation again to generate a new token"
+          'Token is expired, please request activation again to generate a new token',
         );
-      } else if (err.name === "JsonWebTokenError") {
+      } else if (err.name === 'JsonWebTokenError') {
         responseError(
           res,
-          "Token Invalid",
+          'Token Invalid',
           400,
-          "Token is invalid, please request activation again to generate a valid token"
+          'Token is invalid, please request activation again to generate a valid token',
         );
       } else {
         responseError(
           res,
-          "Token Unactive",
+          'Token Unactive',
           400,
-          "Token is Unactive, please request activation again to generate a active token"
+          'Token is Unactive, please request activation again to generate a active token',
         );
       }
     } else {
@@ -89,24 +89,22 @@ const checkTokenActivation = (req, res, next) => {
         if (err) {
           responseError(
             res,
-            "Empty key redis",
+            'Empty key redis',
             400,
-            "Your account activation is invalid",
-            err
+            'Your account activation is invalid',
+            err,
           );
+        } else if (token === redisToken) {
+          req.id = decoded.id;
+          req.email = decoded.email;
+          next();
         } else {
-          if (token === redisToken) {
-            req.id = decoded.id;
-            req.email = decoded.email;
-            next();
-          } else {
-            responseError(
-              res,
-              "Token is not compare",
-              400,
-              "Your token is invalid"
-            );
-          }
+          responseError(
+            res,
+            'Token is not compare',
+            400,
+            'Your token is invalid',
+          );
         }
       });
     }

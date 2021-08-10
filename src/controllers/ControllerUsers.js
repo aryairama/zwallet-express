@@ -1,7 +1,12 @@
-import { response, responseError } from '../helpers/helpers.js';
-import userModel from '../models/Users.js';
+/* eslint-disable camelcase */
+/* eslint-disable radix */
 import bcrypt from 'bcrypt';
 import Jwt from 'jsonwebtoken';
+import path from 'path';
+import fs from 'fs/promises';
+import { v4 as uuidv4 } from 'uuid';
+import { response, responseError } from '../helpers/helpers.js';
+import userModel from '../models/Users.js';
 import sendEmail from '../helpers/sendEmail.js';
 import forgotPassword from '../helpers/forgotPassword.js';
 import { redis } from '../configs/redis.js';
@@ -12,7 +17,7 @@ const register = async (req, res, next) => {
     const checkExistUser = await userModel.checkExistUser(req.body.email, 'email');
     if (checkExistUser.length === 0) {
       const salt = await bcrypt.genSalt(10);
-      let form = {
+      const form = {
         last_name: req.body.last_name,
         first_name: req.body.first_name,
         email: req.body.email,
@@ -22,8 +27,8 @@ const register = async (req, res, next) => {
       if (addDataUser.affectedRows) {
         const user = await userModel.checkExistUser(form.email, 'email');
         const dataUser = user[0];
-        const id = dataUser['user_id'];
-        delete dataUser['password'];
+        const id = dataUser.user_id;
+        delete dataUser.password;
         Jwt.sign({ ...dataUser }, process.env.VERIF_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
           if (err) {
             responseError(res, 'Error', 500, 'Failed create activation token', err);
@@ -35,7 +40,7 @@ const register = async (req, res, next) => {
               'success',
               200,
               `successfully added user data, we send link activation to ${dataUser.email}`,
-              dataUser
+              dataUser,
             );
             redis.set(`JWTACTIVATION-${id}`, token);
           }
@@ -52,7 +57,7 @@ const register = async (req, res, next) => {
 };
 
 const activateAccount = (req, res) => {
-  const email = req.email;
+  const { email } = req;
   userModel
     .activateAccount(email)
     .then(() => {
@@ -81,11 +86,11 @@ const forgotPW = async (req, res, next) => {
   try {
     const { email } = req.body;
     const user = await userModel.checkExistUser(email, 'email');
-    const first_name = user[0].first_name;
-    const last_name = user[0].last_name;
+    const { first_name } = user[0];
+    const { last_name } = user[0];
     const id = user[0].user_id;
 
-    Jwt.sign({ id, email}, process.env.FORGOT_PW_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
+    Jwt.sign({ id, email }, process.env.FORGOT_PW_SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
       if (err) {
         responseError(res, 'JWT Error', 500, 'Failed created forgot password token', err);
       } else {
@@ -100,14 +105,14 @@ const forgotPW = async (req, res, next) => {
 };
 
 const resetPW = (req, res) => {
-  const id = req.id;
-  const email = req.email;
+  const { id } = req;
+  const { email } = req;
   response(
     res,
     'Success!',
     200,
     'Now, you can change your password. Please use a strong and easy to remember your password',
-    { id_user: id, email }
+    { id_user: id, email },
   );
 };
 
@@ -129,7 +134,7 @@ const changePassword = async (req, res, next) => {
             'Success change password',
             200,
             'your password has been changed successfully! Please login with your new password',
-            result
+            result,
           );
           redis.del(`JWTFORGOT-${id}`);
         })
@@ -241,6 +246,42 @@ const refreshToken = async (req, res, next) => {
   }
 };
 
+const updateProfile = async (req, res, next) => {
+  try {
+    const existUser = await userModel.checkExistUser(req.userLogin.user_id, 'user_id');
+    console.log(existUser.length);
+    if (existUser.length > 0) {
+      let data = {
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+      };
+      if (req.body.email) {
+        data = { ...data, email: req.body.email };
+      }
+      if (req.files) {
+        if (req.files.image) {
+          if (existUser[0].image && existUser[0].image.length > 10) {
+            fs.unlink(path.join(path.dirname(''), `/${existUser[0].image}`));
+          }
+          const filename = uuidv4() + path.extname(req.files.image.name);
+          const savePath = path.join(path.dirname(''), '/public/img/profiles', filename);
+          data = { ...data, image: `public/img/profiles/${filename}` };
+          req.files.image.mv(savePath);
+        }
+      }
+      const changeDataUser = await userModel.changePassword(data, req.userLogin.user_id);
+      console.log(data);
+      if (changeDataUser.affectedRows) {
+        return response(res, 'success', 200, 'successfully updated user data', data);
+      }
+      return responseError(res, 'error', 500, 'Update failed', {});
+    }
+    return responseError(res, 'Failed', 404, 'User not found', {});
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   activateAccount,
@@ -252,4 +293,5 @@ export default {
   login,
   logout,
   refreshToken,
+  updateProfile,
 };

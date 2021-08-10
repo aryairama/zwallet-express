@@ -5,21 +5,37 @@ import {
   emailRules,
   changePasswordRules,
   loginFieldRules,
+  rulesUpdateImageProfile,
+  rulesFileUploud,
+  rulesPassword,
+  updateEmail,
+  registerEmail,
 } from '../validations/ValidatonUsers.js';
 import resultOfValidation from '../validations/ValidationResult.js';
 import constrollerUsers from '../controllers/ControllerUsers.js';
 import { checkTokenResetPassword, checkTokenActivation } from '../middlewares/checkToken.js';
 import { Auth, Role } from '../middlewares/Auth.js';
+
 const router = express.Router();
 
 router
-  .post('/', registerFieldRules(), resultOfValidation, constrollerUsers.register)
+  .post('/', registerFieldRules(), rulesPassword(), registerEmail(), resultOfValidation, constrollerUsers.register)
+  .put(
+    '/',
+    Auth,
+    Role('member'),
+    rulesFileUploud,
+    updateEmail(),
+    rulesUpdateImageProfile(),
+    registerFieldRules(),
+    resultOfValidation,
+    constrollerUsers.updateProfile,
+  )
   .post('/login', loginFieldRules(), resultOfValidation, constrollerUsers.login)
   .delete('/logout', Auth, Role('member', 'admin'), constrollerUsers.logout)
   .post('/refreshtoken', constrollerUsers.refreshToken)
   .get('/activation/:token', checkTokenActivation, constrollerUsers.activateAccount)
   .get('/show/:id', Auth, Role('member', 'admin'), constrollerUsers.showUser)
-
   // Forgot password
   .post('/forgotpassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
   .get('/forgotpassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
