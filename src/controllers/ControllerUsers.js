@@ -307,7 +307,7 @@ const readDataUser = async (req, res, next) => {
   let dataUsers;
   let pagination;
   try {
-    const lengthRecord = await userModel.readUser(search, order, fieldOrder);
+    const lengthRecord = await userModel.readUser(search, order, fieldOrder, req.userLogin.user_id);
     if (lengthRecord.length > 0) {
       const limit = req.query.limit || 5;
       const pages = Math.ceil(lengthRecord.length / limit);
@@ -334,7 +334,7 @@ const readDataUser = async (req, res, next) => {
         nextPage,
         prevPage,
       };
-      dataUsers = await userModel.readUser(search, order, fieldOrder, start, limit);
+      dataUsers = await userModel.readUser(search, order, fieldOrder, req.userLogin.user_id, start, limit);
       responsePagination(res, 'success', 200, 'data users', dataUsers, pagination);
     } else {
       response(res, 'success', 200, 'data users', lengthRecord);
