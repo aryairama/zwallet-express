@@ -43,12 +43,12 @@ const updateSaldo = (saldo, userId) => new Promise((resolve, reject) => {
   });
 });
 
-const readUser = (search, order, fieldOrder, start = '', limit = '') => new Promise((resolve, reject) => {
+const readUser = (search, order, fieldOrder, userLogin, start = '', limit = '') => new Promise((resolve, reject) => {
   if (limit !== '' && start !== '') {
     connection.query(
       `SELECT * FROM users WHERE 
       (first_name LIKE "%${search}%" OR last_name LIKE "%${search}%" OR phone_number LIKE "%${search}%" OR email LIKE "%${search}%"
-      OR fullname LIKE "%${search}%")
+      OR fullname LIKE "%${search}%") AND user_id != ${userLogin}
       ORDER BY ${fieldOrder} ${order} LIMIT ${start} , ${limit}`,
       (error, result) => {
         promiseResolveReject(resolve, reject, error, result);
@@ -58,7 +58,7 @@ const readUser = (search, order, fieldOrder, start = '', limit = '') => new Prom
     connection.query(
       `SELECT * FROM users WHERE 
       (first_name LIKE "%${search}%" OR last_name LIKE "%${search}%" OR phone_number LIKE "%${search}%" OR email LIKE "%${search}%"
-      OR fullname LIKE "%${search}%")
+      OR fullname LIKE "%${search}%") AND user_id != ${userLogin}
       ORDER BY ${fieldOrder} ${order}`,
       (error, result) => {
         promiseResolveReject(resolve, reject, error, result);
