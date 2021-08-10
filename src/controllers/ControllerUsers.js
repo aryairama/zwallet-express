@@ -155,7 +155,8 @@ const showUser = async (req, res, next) => {
     await userModel
       .checkExistUser(id, 'user_id')
       .then((result) => {
-        response(res, 'Success', 200, 'Successfully get data user', result);
+        delete result[0].password;
+        response(res, 'Success', 200, 'Successfully get data user', result[0]);
       })
       .catch((err) => {
         responseError(res, 'Error get data', 500, 'Error during get data', err);
