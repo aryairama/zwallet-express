@@ -171,6 +171,21 @@ const rulesRead = () => [
     .withMessage('fieldOrder must be more than 0'),
 ];
 
+const updatePassword = () => [
+  body('new_password')
+    .notEmpty()
+    .withMessage('Please insert compare password')
+    .bail()
+    .isLength({ min: 4, max: 15 })
+    .withMessage('Password min 4 & max 15'),
+  body('old_password')
+    .notEmpty()
+    .withMessage('Please insert compare password')
+    .bail()
+    .isLength({ min: 4, max: 15 })
+    .withMessage('Password min 4 & max 15'),
+];
+
 export {
   registerFieldRules,
   PINRules,
@@ -183,4 +198,5 @@ export {
   updateEmail,
   registerEmail,
   rulesRead,
+  updatePassword,
 };

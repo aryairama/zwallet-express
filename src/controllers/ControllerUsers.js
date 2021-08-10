@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable camelcase */
 /* eslint-disable radix */
 import bcrypt from 'bcrypt';
@@ -344,6 +345,31 @@ const readDataUser = async (req, res, next) => {
   }
 };
 
+const updatePassword = async (req, res, next) => {
+  try {
+    const getDataUser = await userModel.checkExistUser(req.userLogin.user_id, 'user_id');
+    if (getDataUser.length > 0) {
+      const comparePassword = await bcrypt.compare(req.body.old_password, getDataUser[0].password);
+      if (comparePassword) {
+        const salt = await bcrypt.genSalt(10);
+        const changePassword = await userModel.changePassword(
+          { password: await bcrypt.hash(req.body.new_password, salt) },
+          req.userLogin.user_id,
+        );
+        if (changePassword.affectedRows) {
+          return response(res, 'success', 200, 'successfully updated user data');
+        }
+      } else {
+        return response(res, 'failed', 403, "passwords don't match", []);
+      }
+    } else {
+      return response(res, 'failed', 404, 'the data you want to update does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   activateAccount,
@@ -357,4 +383,5 @@ export default {
   refreshToken,
   updateProfile,
   readDataUser,
+  updatePassword,
 };

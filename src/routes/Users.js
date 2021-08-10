@@ -11,6 +11,7 @@ import {
   updateEmail,
   registerEmail,
   rulesRead,
+  updatePassword,
 } from '../validations/ValidatonUsers.js';
 import resultOfValidation from '../validations/ValidationResult.js';
 import constrollerUsers from '../controllers/ControllerUsers.js';
@@ -42,6 +43,7 @@ router
   .post('/forgotpassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
   .get('/forgotpassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
   .post('/changepassword', changePasswordRules(), resultOfValidation, constrollerUsers.changePassword)
+  .post('/updatepassword', Auth, Role('member', 'admin'), updatePassword(), resultOfValidation, constrollerUsers.updatePassword)
 
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN);
