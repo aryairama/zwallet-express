@@ -45,7 +45,6 @@ const registerEmail = () => [
 const updateEmail = () => [
   body('email')
     .optional({ checkFalsy: true })
-    .bail()
     .isEmail()
     .withMessage('Your email is invalid')
     .bail()
@@ -70,8 +69,7 @@ const rulesFileUploud = (req, res, next) => {
 
 const rulesUpdateImageProfile = () => [
   body('image')
-    .optional({ checkFalsy: false })
-    .bail()
+    .optional({ checkFalsy: true })
     .custom((value) => {
       if (value.mimetype !== 'image/png' && value.mimetype !== 'image/jpeg') {
         throw new Error('image must be jpg or png');

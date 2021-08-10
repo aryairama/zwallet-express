@@ -249,7 +249,6 @@ const refreshToken = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const existUser = await userModel.checkExistUser(req.userLogin.user_id, 'user_id');
-    console.log(existUser.length);
     if (existUser.length > 0) {
       let data = {
         first_name: req.body.first_name,
@@ -270,7 +269,6 @@ const updateProfile = async (req, res, next) => {
         }
       }
       const changeDataUser = await userModel.changePassword(data, req.userLogin.user_id);
-      console.log(data);
       if (changeDataUser.affectedRows) {
         return response(res, 'success', 200, 'successfully updated user data', data);
       }
