@@ -49,12 +49,6 @@ const statusRules = () => [
 ];
 
 const transferFielfRules = () => [
-  body('user_id')
-    .notEmpty()
-    .withMessage('user_is empty')
-    .bail()
-    .isNumeric()
-    .withMessage('Invalid user_id'),
   body('user_reciever')
     .notEmpty()
     .withMessage("recipient can't empty"),
