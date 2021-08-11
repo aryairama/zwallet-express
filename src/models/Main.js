@@ -53,7 +53,7 @@ const showtransaction = (userId, transactionId) => new Promise((resolve, reject)
   }
   // eslint-disable-next-line max-len
   connection.query(
-    `select transactions.transaction_id, transactions.invoice_number, transactions.user_id, left(transactions.created_at, 16) as timeTransaction, 
+    `select transactions.transaction_id,transactions.image_topup, transactions.invoice_number, transactions.user_id, left(transactions.created_at, 16) as timeTransaction, 
     users.fullname, transactions_reciever.user_id as id_recipient, (select fullname from users where user_id = transactions_reciever.user_id) as recipient,
      (select image from users where user_id = transactions_reciever.user_id) as image_reciever,
       (select phone_number from users where user_id = transactions_reciever.user_id) as phone_reciever,
