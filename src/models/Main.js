@@ -30,18 +30,18 @@ const getAllTransaction = (keyword, userId, order = '', field = '', start = '', 
   if (order === '' && field === '' && start === '' && limit === '') {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.image_topup, transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs}`,
+      `select transactions.image_topup, transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever,users.image, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs}`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
-      },
+      }
     );
   } else {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.image_topup, transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, transactions.user_id as sender_id, users.fullname, transactions_reciever.user_id as id_recipient, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} order by transactions.${field} ${order} limit ${start},${limit}`,
+      `select transactions.image_topup, transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, transactions.user_id as sender_id, users.fullname, transactions_reciever.user_id as id_recipient, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, users.image,transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} order by transactions.${field} ${order} limit ${start},${limit}`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
-      },
+      }
     );
   }
 });
