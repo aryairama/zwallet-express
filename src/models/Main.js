@@ -27,7 +27,7 @@ const getAllTransaction = (keyword, userId, order = '', field = '', start = '', 
   if (order === '' && field === '' && start === '' && limit === '') {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.transaction_id, transactions.invoice_number, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, transactions.transaction_type, transactions.status from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%' or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%'`,
+      `select transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 10) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, transactions.transaction_type, transactions.status from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%' or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%'`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
       },
@@ -35,12 +35,23 @@ const getAllTransaction = (keyword, userId, order = '', field = '', start = '', 
   } else {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.transaction_id, transactions.invoice_number, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%'  or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%' order by transactions.${field} ${order} limit ${start},${limit}`,
+      `select transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%'  or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%' order by transactions.${field} ${order} limit ${start},${limit}`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
       },
     );
   }
+});
+
+const showtransaction = (userId, transactionId) => new Promise((resolve, reject) => {
+  let dataUserAs = `transactions.user_id = ${userId} and`;
+  if (userId === 0) {
+    dataUserAs = '';
+  }
+  // eslint-disable-next-line max-len
+  connection.query(`select transactions.transaction_id, transactions.invoice_number, transactions.user_id, left(transactions.created_at, 16) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, (select phone_number from users where user_id = transactions_reciever.user_id) as phone_reciever, transactions.amount, transactions.transaction_type, transactions.status, transactions.description from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.transaction_id = ${transactionId}`, (err, result) => {
+    promiseResolveReject(resolve, reject, err, result);
+  });
 });
 
 const updatetransaction = (status, transactionId) => new Promise((resolve, reject) => {
@@ -96,4 +107,5 @@ export default {
   updatetransaction,
   getAllTransaction,
   transfer,
+  showtransaction,
 };
