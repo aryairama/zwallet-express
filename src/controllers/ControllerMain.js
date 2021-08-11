@@ -93,7 +93,16 @@ const getAllTransaction = async (req, res, next) => {
           start = (page - 1) * limit;
         }
         if (countData > 0) {
-          const dataTransaction = await mainModels.getAllTransaction(keyword, userId, order, fieldOrder, start, limit);
+          const data = await mainModels.getAllTransaction(keyword, userId, order, fieldOrder, start, limit);
+          const dataTransaction = [];
+          // data.map((item) => dataTransaction.push(item));
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].id_recipient === userId) {
+              data[i].transaction_type = 'transfer_in';
+            }
+            dataTransaction.push(data[i]);
+          }
           const pagination = {
             countData,
             pages: Math.ceil(pages),
