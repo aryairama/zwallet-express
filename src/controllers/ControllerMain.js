@@ -37,7 +37,13 @@ const topUp = async (req, res, next) => {
 
 const getAllTransaction = async (req, res, next) => {
   try {
-    const userId = req.userLogin.user_id;
+    let userId = '';
+    const { roles } = req.userLogin;
+    if (roles === 'admin') {
+      userId = 0;
+    } else {
+      userId = req.userLogin.user_id;
+    }
 
     const keyword = req.query.keyword || '';
     const limit = req.query.limit || 5;

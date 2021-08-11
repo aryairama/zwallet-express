@@ -18,9 +18,15 @@ const insertImageTopup = (filename, invoiceNumber) => new Promise((resolve, reje
 });
 
 const getAllTransaction = (keyword, userId, order = '', field = '', start = '', limit = '') => new Promise((resolve, reject) => {
+  let dataLengthAs = `user_id = ${userId} and`;
+  let dataUserAs = `transactions.user_id = ${userId} and`;
+  if (userId === 0) {
+    dataLengthAs = '';
+    dataUserAs = '';
+  }
   if (order === '' && field === '' && start === '' && limit === '') {
     connection.query(
-      `select count(*) as transactionAmount from transactions where user_id = ${userId} and invoice_number like '%${keyword}%'`,
+      `select count(*) as transactionAmount from transactions where ${dataLengthAs} invoice_number like '%${keyword}%'`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
       },
@@ -28,12 +34,31 @@ const getAllTransaction = (keyword, userId, order = '', field = '', start = '', 
   } else {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.transaction_id, transactions.invoice_number, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where transactions.user_id = ${userId} and transactions.invoice_number like '%${keyword}%' order by transactions.${field} ${order} limit ${start},${limit}`,
+      `select transactions.transaction_id, transactions.invoice_number, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' order by transactions.${field} ${order} limit ${start},${limit}`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
       },
     );
   }
+  // } else {
+  //   // eslint-disable-next-line no-lonely-if
+  //   if (order === '' && field === '' && start === '' && limit === '') {
+  //     connection.query(
+  //       `select count(*) as transactionAmount from transactions where user_id = ${userId} and invoice_number like '%${keyword}%'`,
+  //       (err, result) => {
+  //         promiseResolveReject(resolve, reject, err, result);
+  //       },
+  //     );
+  //   } else {
+  //     connection.query(
+  // eslint-disable-next-line max-len
+  //       `select transactions.transaction_id, transactions.invoice_number, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where transactions.user_id = ${userId} and transactions.invoice_number like '%${keyword}%' order by transactions.${field} ${order} limit ${start},${limit}`,
+  //       (err, result) => {
+  //         promiseResolveReject(resolve, reject, err, result);
+  //       },
+  //     );
+  //   }
+  // }
 });
 
 const updatetransaction = (status, transactionId) => new Promise((resolve, reject) => {
