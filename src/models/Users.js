@@ -67,6 +67,12 @@ const readUser = (search, order, fieldOrder, userLogin, start = '', limit = '') 
   }
 });
 
+const updatePhoneNumber = (phoneNumber, userId) => new Promise((resolve, reject) => {
+  connection.query(`UPDATE users SET phone_number = '${phoneNumber}' WHERE user_id = ${userId}`, (err, result) => {
+    promiseResolveReject(resolve, reject, err, result);
+  });
+});
+
 export default {
   register,
   checkExistUser,
@@ -76,4 +82,5 @@ export default {
   getUser,
   updateSaldo,
   readUser,
+  updatePhoneNumber,
 };

@@ -186,6 +186,12 @@ const updatePassword = () => [
     .withMessage('Password min 4 & max 15'),
 ];
 
+const phoneNumberRules = () => [
+  body('phoneNumber')
+    .contains('+62', { ignoreCase: true })
+    .withMessage('You have to enter the number with the country code like +62, etc'),
+];
+
 export {
   registerFieldRules,
   PINRules,
@@ -199,4 +205,5 @@ export {
   registerEmail,
   rulesRead,
   updatePassword,
+  phoneNumberRules,
 };
