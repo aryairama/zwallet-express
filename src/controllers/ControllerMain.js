@@ -138,7 +138,7 @@ const showtransaction = async (req, res, next) => {
       userId = req.userLogin.user_id;
     }
     mainModels
-      .showtransaction(transactionId)
+      .showtransaction(userId, transactionId)
       .then((result) => {
         if (result.length > 0) {
           const { timeTransaction } = result[0];
