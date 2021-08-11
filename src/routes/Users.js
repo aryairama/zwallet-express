@@ -12,6 +12,7 @@ import {
   registerEmail,
   rulesRead,
   updatePassword,
+  phoneNumberRules,
 } from '../validations/ValidatonUsers.js';
 import resultOfValidation from '../validations/ValidationResult.js';
 import constrollerUsers from '../controllers/ControllerUsers.js';
@@ -47,6 +48,7 @@ router
 
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
-  .post('/updatepin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.updatePin);
+  .post('/updatepin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.updatePin)
+  .post('/addphonenumber', Auth, Role('member'), phoneNumberRules(), resultOfValidation, constrollerUsers.addPhoneNumber);
 
 export default router;

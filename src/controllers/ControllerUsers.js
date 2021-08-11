@@ -361,7 +361,7 @@ const updatePassword = async (req, res, next) => {
           return response(res, 'success', 200, 'successfully updated user data');
         }
       } else {
-        return response(res, 'failed', 403, "passwords don't match", []);
+        return response(res, 'failed', 403, "passwords isn't match", []);
       }
     } else {
       return response(res, 'failed', 404, 'the data you want to update does not exist', []);
@@ -393,6 +393,30 @@ const updatePin = async (req, res, next) => {
   }
 };
 
+const addPhoneNumber = async (req, res, next) => {
+  try {
+    const { user_id } = req.userLogin;
+    const { phoneNumber } = req.body;
+    let phoneNumberUpdate = null;
+    if (phoneNumber && phoneNumber !== '+62') {
+      phoneNumberUpdate = phoneNumber.toString();
+    }
+    userModel.updatePhoneNumber(phoneNumberUpdate, user_id)
+      .then(() => {
+        if (phoneNumberUpdate === null) {
+          response(res, 'Success', 200, 'Successfully deleted phone number');
+        } else {
+          response(res, 'Success', 200, 'Successfully update phone number');
+        }
+      })
+      .catch((err) => {
+        responseError(res, 'Error', 500, 'Failed update phone number, please try again later', err);
+      });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   register,
   activateAccount,
@@ -408,4 +432,5 @@ export default {
   readDataUser,
   updatePassword,
   updatePin,
+  addPhoneNumber,
 };
