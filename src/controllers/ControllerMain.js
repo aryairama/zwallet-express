@@ -81,7 +81,7 @@ const getAllTransaction = async (req, res, next) => {
     await mainModels
       .getAllTransaction(keyword, userId)
       .then(async (result) => {
-        const countData = result[0].transactionAmount;
+        const countData = result.length;
         const pages = countData / limit;
         if (nextPage > pages) {
           nextPage = Math.ceil(pages);
