@@ -79,6 +79,12 @@ const updatePhoneNumber = (phoneNumber, userId) => new Promise((resolve, reject)
   });
 });
 
+const deletePhoneNumber = (userId) => new Promise((resolve, reject) => {
+  connection.query(`UPDATE users SET phone_number = '' WHERE user_id = ${userId}`, (err, result) => {
+    promiseResolveReject(resolve, reject, err, result);
+  });
+});
+
 export default {
   register,
   checkExistUser,
@@ -89,4 +95,5 @@ export default {
   updateSaldo,
   readUser,
   updatePhoneNumber,
+  deletePhoneNumber,
 };

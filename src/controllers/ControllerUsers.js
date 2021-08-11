@@ -425,6 +425,21 @@ const addPhoneNumber = async (req, res, next) => {
   }
 };
 
+const deletePhoneNumber = async (req, res, next) => {
+  try {
+    const { user_id } = req.userLogin;
+    userModel.deletePhoneNumber(user_id)
+      .then(() => {
+        response(res, 'Success', 200, 'Successfully delete phone number');
+      })
+      .catch((err) => {
+        responseError(res, 'Error', 500, 'Failed delete phone number', err);
+      });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   register,
   activateAccount,
@@ -441,4 +456,5 @@ export default {
   updatePassword,
   updatePin,
   addPhoneNumber,
+  deletePhoneNumber,
 };

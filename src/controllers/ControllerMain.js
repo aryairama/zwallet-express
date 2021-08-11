@@ -116,7 +116,7 @@ const getAllTransaction = async (req, res, next) => {
           };
           responsePagination(res, 'success', 200, 'All data successfully loaded', dataTransaction, pagination);
         } else {
-          responseError(res, 'Data Not Found', 403, 'Data not found');
+          response(res, 'Data Not Found', 200, 'Data not found');
         }
       })
       .catch((err) => {
