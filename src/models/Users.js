@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import connection from '../configs/db.js';
 import { promiseResolveReject } from '../helpers/helpers.js';
 
@@ -97,3 +98,5 @@ export default {
   updatePhoneNumber,
   deletePhoneNumber,
 };
+=======
+>>>>>>> 491384432cca4b7da81904beaac6911c27762f2a
