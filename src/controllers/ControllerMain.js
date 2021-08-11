@@ -154,11 +154,13 @@ const showtransaction = async (req, res, next) => {
             'November',
             'December',
           ];
-          const month = timeTransaction.substring(5, 7);
-          const months = monthNames[parseInt(month)];
+          const months = monthNames[parseInt(timeTransaction.substring(5, 7))];
           // eslint-disable-next-line max-len
           result[0].time = `${months} ${timeTransaction.substring(8, 10)}, ${timeTransaction.substring(0, 4)} - ${timeTransaction.substring(11)}`;
           delete result[0].timeTransaction;
+          if (result[0].id_recipient === userId) {
+            result[0].transaction_type = 'transfer_in';
+          }
           response(res, 'Success', 200, 'Data successfully loaded', result[0]);
         } else {
           responseError(res, 'Error', 403, 'This is not your transaction');
