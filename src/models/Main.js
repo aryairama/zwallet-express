@@ -19,6 +19,7 @@ const insertImageTopup = (filename, invoiceNumber) => new Promise((resolve, reje
 });
 
 const getAllTransaction = (keyword, userId, order = '', field = '', start = '', limit = '') => new Promise((resolve, reject) => {
+  console.log(userId);
   let dataUserAs = `transactions.user_id = ${userId} or transactions_reciever.user_id = ${userId}`;
   if (userId === 0) {
     dataUserAs = `transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%' or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%'`;
