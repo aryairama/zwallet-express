@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import express from 'express';
 import {
   registerFieldRules,
@@ -54,5 +53,3 @@ router
   .post('/deletephonenumber', Auth, Role('member', 'admin'), constrollerUsers.deletePhoneNumber);
 
 export default router;
-=======
->>>>>>> 491384432cca4b7da81904beaac6911c27762f2a
