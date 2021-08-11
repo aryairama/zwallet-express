@@ -10,7 +10,7 @@ const router = express.Router();
 
 router
   .get('/gettransactions', Auth, Role('member', 'admin'), ControllerMain.getAllTransaction)
-  // .get('/gettransactionsbyadmin', Auth, Role('admin'), ControllerMain.getTransactionByAdmin)
+  .get('/showtransaction/:transactionId', Auth, Role('member', 'admin'), ControllerMain.showtransaction)
   .post('/topup', Auth, Role('member'), rulesFileUploud, rulesCreateImgTopUp(), topUpFieldRules(), resultOfValidation, ControllerMain.topUp)
   .post('/updatetransaction', Auth, Role('admin'), statusRules(), resultOfValidation, ControllerMain.updatetransaction)
   .post('/transfer', Auth, Role('member'), transferFielfRules(), resultOfValidation, ControllerMain.transfer)

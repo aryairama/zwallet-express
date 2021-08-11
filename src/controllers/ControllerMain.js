@@ -81,7 +81,7 @@ const getAllTransaction = async (req, res, next) => {
     await mainModels
       .getAllTransaction(keyword, userId)
       .then(async (result) => {
-        const countData = result[0].transactionAmount;
+        const countData = result.length;
         const pages = countData / limit;
         if (nextPage > pages) {
           nextPage = Math.ceil(pages);
@@ -110,6 +110,67 @@ const getAllTransaction = async (req, res, next) => {
       })
       .catch((err) => {
         responseError(res, 'Error get dat', 500, 'Error during get data form database', err);
+      });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const showtransaction = async (req, res, next) => {
+  try {
+    let userId = '';
+    const { transactionId } = req.params;
+    const { roles } = req.userLogin;
+    if (roles === 'admin') {
+      userId = 0;
+    } else {
+      userId = req.userLogin.user_id;
+    }
+    mainModels.showtransaction(userId, transactionId)
+      .then((result) => {
+        if (result.length > 0) {
+          const { timeTransaction } = result[0];
+          // const monthNames = {
+          //   '01': 'January',
+          //   '02': 'February',
+          //   '03': 'March',
+          //   '04': 'April',
+          //   '05': 'May',
+          //   '06': 'June',
+          //   '07': 'July',
+          //   '08': 'August',
+          //   '09': 'September',
+          //   10: 'October',
+          //   11: 'November',
+          //   12: 'December',
+          // };
+          const monthNames = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+          ];
+          const month = timeTransaction.substring(5, 7);
+          const months = monthNames[parseInt(month)];
+          // eslint-disable-next-line max-len
+          result[0].time = `${months} ${timeTransaction.substring(8, 10)}, ${timeTransaction.substring(0, 4)} - ${timeTransaction.substring(11)}`;
+          delete result[0].timeTransaction;
+          response(res, 'Success', 200, 'Data successfully loaded', result[0]);
+        } else {
+          responseError(res, 'Error', 403, 'This is not your transaction');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        responseError(res, 'Error', 500, 'Error during get transaction', err);
       });
   } catch (err) {
     next(err);
@@ -254,4 +315,5 @@ export default {
   getAllTransaction,
   transfer,
   checkPIN,
+  showtransaction,
 };
