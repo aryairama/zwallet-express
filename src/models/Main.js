@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import connection from '../configs/db.js';
 import { promiseResolveReject } from '../helpers/helpers.js';
 
@@ -18,16 +19,14 @@ const insertImageTopup = (filename, invoiceNumber) => new Promise((resolve, reje
 });
 
 const getAllTransaction = (keyword, userId, order = '', field = '', start = '', limit = '') => new Promise((resolve, reject) => {
-  // let dataLengthAs = `user_id = ${userId} and`;
-  let dataUserAs = `transactions.user_id = ${userId} and`;
+  let dataUserAs = `transactions.user_id = ${userId} or transactions_reciever.user_id = ${userId}`;
   if (userId === 0) {
-    // dataLengthAs = '';
-    dataUserAs = '';
+    dataUserAs = `transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%' or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%'`;
   }
   if (order === '' && field === '' && start === '' && limit === '') {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 10) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, transactions.transaction_type, transactions.status from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%' or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%'`,
+      `select transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs}`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
       },
@@ -35,7 +34,7 @@ const getAllTransaction = (keyword, userId, order = '', field = '', start = '', 
   } else {
     connection.query(
       // eslint-disable-next-line max-len
-      `select transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, users.fullname, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%'  or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%' order by transactions.${field} ${order} limit ${start},${limit}`,
+      `select transactions.transaction_id, transactions.invoice_number, left(transactions.created_at, 16) as timeTransaction, transactions.user_id as sender_id, users.fullname, transactions_reciever.user_id as id_recipient, (select fullname from users where user_id = transactions_reciever.user_id) as recipient, (select image from users where user_id = transactions_reciever.user_id) as image_reciever, transactions.transaction_type, transactions.status, transactions.amount from transactions inner join users on transactions.user_id = users.user_id left join transactions_reciever on transactions.transaction_id = transactions_reciever.transaction_id where ${dataUserAs} order by transactions.${field} ${order} limit ${start},${limit}`,
       (err, result) => {
         promiseResolveReject(resolve, reject, err, result);
       },
