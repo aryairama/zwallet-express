@@ -412,9 +412,9 @@ const addPhoneNumber = async (req, res, next) => {
     userModel.updatePhoneNumber(phoneNumberUpdate, user_id)
       .then(() => {
         if (phoneNumberUpdate === null) {
-          response(res, 'Success', 200, 'Successfully deleted phone number');
+          response(res, 'Success', 200, 'Successfully deleted phone number', phoneNumber);
         } else {
-          response(res, 'Success', 200, 'Successfully update phone number');
+          response(res, 'Success', 200, 'Successfully update phone number', phoneNumber);
         }
       })
       .catch((err) => {
