@@ -371,6 +371,28 @@ const updatePassword = async (req, res, next) => {
   }
 };
 
+const updatePin = async (req, res, next) => {
+  try {
+    const getDataUser = await userModel.checkExistUser(req.userLogin.user_id, 'user_id');
+    if (getDataUser.length > 0) {
+      const data = {
+        PIN: req.body.PIN,
+      };
+      const updatePin = await userModel.changePassword(data, req.userLogin.user_id);
+      if (updatePin.affectedRows) {
+        return response(res, 'success', 200, 'successfully updated pin', data);
+      }
+      if (!updatePin.affectedRows) {
+        return responseError(res, 'failed', 400, 'Failed change pin');
+      }
+    } else {
+      return response(res, 'failed', 404, 'the data you want to update does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   activateAccount,
@@ -385,4 +407,5 @@ export default {
   updateProfile,
   readDataUser,
   updatePassword,
+  updatePin,
 };
