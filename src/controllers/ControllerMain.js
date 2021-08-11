@@ -375,7 +375,7 @@ const getTopup = async (req, res, next) => {
           const data = await mainModels.getDataTopup(keyword, order, fieldOrder, start, limit);
           responsePagination(res, 'success', 200, 'All data successfully loaded', data, pagination);
         } else {
-          responseError(res, 'Not Found', 404, 'Data top up not found');
+          responseError(res, 'Not Found', 200, 'Data top up not found');
         }
       })
       .catch((err) => {
