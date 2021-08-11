@@ -46,6 +46,7 @@ router
   .post('/updatepassword', Auth, Role('member', 'admin'), updatePassword(), resultOfValidation, constrollerUsers.updatePassword)
 
   // main feature
-  .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN);
+  .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
+  .post('/updatepin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.updatePin);
 
 export default router;
