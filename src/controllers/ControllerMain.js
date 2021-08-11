@@ -10,26 +10,27 @@ const topUp = async (req, res, next) => {
   try {
     const { user_id } = req.userLogin;
     const { amount } = req.body;
-    const { image_topup } = req.files;
-    const fileName = `${Date.now} - ${uuidv4} - ${image_topup.name}`;
-    const dataTopUp = {
+    let dataTopUp = {
       invoice_number: uuidv4(),
       user_id,
       transaction_type: 'topup',
       status: 'pending',
       amount,
     };
-    await mainModels
-      .insertDataTopup(dataTopUp)
-      .then(() => {
-        console.log('masuk then');
-        response(res, 'sucess', 200, 'sukses masuk then dan insert data');
-        const savePath = path.join(path.dirname(''), '/public', fileName);
-        image_topup.mv(savePath);
-      })
-      .catch((err) => {
-        responseError(res, 'Error', 500, 'Error during insert data', err);
-      });
+    if (req.files) {
+      if (req.files.image_topup) {
+        const filename = uuidv4() + path.extname(req.files.image_topup.name);
+        const savePath = path.join(path.dirname(''), '/public/img/topups', filename);
+        dataTopUp = { ...dataTopUp, image_topup: `public/img/topups/${filename}` };
+        req.files.image_topup.mv(savePath);
+      }
+    }
+    const insertTopup = await mainModels.insertDataTopup(dataTopUp);
+    if (insertTopup.affectedRows) {
+      return response(res, 'sucess', 200, 'sukses masuk then dan insert data');
+    } if (!insertTopup.affectedRows) {
+      responseError(res, 'Error', 500, 'Error during insert data');
+    }
   } catch (err) {
     next(err);
   }
