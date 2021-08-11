@@ -19,10 +19,13 @@ const insertImageTopup = (filename, invoiceNumber) => new Promise((resolve, reje
 });
 
 const getAllTransaction = (keyword, userId, order = '', field = '', start = '', limit = '') => new Promise((resolve, reject) => {
-  console.log(userId);
-  let dataUserAs = `transactions.user_id = ${userId} or transactions_reciever.user_id = ${userId}`;
+  let dataUserAs = '';
+  const byUser = `(transactions.user_id = ${userId} or transactions_reciever.user_id = ${userId})`;
+  const search = `(transactions.invoice_number like "%${keyword}%" or users.fullname like "%${keyword}%" or transactions.status like "%${keyword}%" or transactions.transaction_type like "%${keyword}%")`;
   if (userId === 0) {
-    dataUserAs = `transactions.invoice_number like '%${keyword}%' or users.fullname like '%${keyword}%' or transactions.status like '%${keyword}%' or transactions.transaction_type like '%${keyword}%'`;
+    dataUserAs = search;
+  } else {
+    dataUserAs = `${byUser} AND ${search}`;
   }
   if (order === '' && field === '' && start === '' && limit === '') {
     connection.query(
