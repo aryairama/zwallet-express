@@ -412,13 +412,28 @@ const addPhoneNumber = async (req, res, next) => {
     userModel.updatePhoneNumber(phoneNumberUpdate, user_id)
       .then(() => {
         if (phoneNumberUpdate === null) {
-          response(res, 'Success', 200, 'Successfully deleted phone number');
+          response(res, 'Success', 200, 'Successfully deleted phone number', phoneNumber);
         } else {
-          response(res, 'Success', 200, 'Successfully update phone number');
+          response(res, 'Success', 200, 'Successfully update phone number', phoneNumber);
         }
       })
       .catch((err) => {
         responseError(res, 'Error', 500, 'Failed update phone number, please try again later', err);
+      });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const deletePhoneNumber = async (req, res, next) => {
+  try {
+    const { user_id } = req.userLogin;
+    userModel.deletePhoneNumber(user_id)
+      .then(() => {
+        response(res, 'Success', 200, 'Successfully delete phone number');
+      })
+      .catch((err) => {
+        responseError(res, 'Error', 500, 'Failed delete phone number', err);
       });
   } catch (err) {
     next(err);
@@ -441,4 +456,5 @@ export default {
   updatePassword,
   updatePin,
   addPhoneNumber,
+  deletePhoneNumber,
 };

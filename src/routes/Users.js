@@ -49,6 +49,7 @@ router
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
   .post('/updatepin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.updatePin)
-  .post('/addphonenumber', Auth, Role('member'), phoneNumberRules(), resultOfValidation, constrollerUsers.addPhoneNumber);
+  .post('/addphonenumber', Auth, Role('member', 'admin'), phoneNumberRules(), resultOfValidation, constrollerUsers.addPhoneNumber)
+  .post('/deletephonenumber', Auth, Role('member', 'admin'), constrollerUsers.deletePhoneNumber);
 
 export default router;
