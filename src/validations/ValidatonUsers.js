@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { body, query } from 'express-validator';
 import userModel from '../models/Users.js';
 
@@ -208,5 +207,3 @@ export {
   updatePassword,
   phoneNumberRules,
 };
-=======
->>>>>>> 491384432cca4b7da81904beaac6911c27762f2a

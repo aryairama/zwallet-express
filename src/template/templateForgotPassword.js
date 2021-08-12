@@ -1,4 +1,4 @@
-const templateEmail = (link, name) => `
+const templateForgotPassword = (link, name) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,11 +50,11 @@ const templateEmail = (link, name) => `
 </head>
 <body>
     <div class="content">
-        <img src="cid:email" alt="">
-        <h2>Verify your email address</h2>
+        <img src="cid:forgotpw" alt="">
+        <h2>Reset your password</h2>
         <p>
-            Hi <strong>${name}, </strong> thank you for registering zwallet <br>
-            Please verify this email by clicking button below
+            Hi <strong>${name}, </strong>  Did You Forgot Your Password? <br>
+            Don’t Worry, You Can Reset Your Password Now By Clicking this button below !
         </p>
         <a href="${link}" class="" style="
         margin-top: 40px;
@@ -67,7 +67,7 @@ const templateEmail = (link, name) => `
         color: #ffff;
         padding-top: 18px;
         border-radius: 10px;
-        ">Verify your email</a>
+        ">Reset Password</a>
         <div class="footer">
             <b>--------------------------</b> <br>
         </div>
@@ -76,4 +76,4 @@ const templateEmail = (link, name) => `
 </html>
 `;
 
-export default templateEmail;
+export default templateForgotPassword;
