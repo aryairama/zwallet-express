@@ -187,10 +187,11 @@ const updatetransaction = async (req, res, next) => {
     } = req.body;
     await mainModels
       .updatetransaction(status, transaction_id)
-      .then(() => {
+      .then(async () => {
         if (status === 'approve') {
+          const user_data = await userModels.checkExistUser(user_id, 'user_id');
           userModels
-            .updateSaldo(amount, user_id)
+            .updateSaldo(parseInt(amount) + parseInt(user_data[0].saldo), user_id)
             .then(() => {
               userModels
                 .checkExistUser(user_id, 'user_id')
@@ -349,7 +350,8 @@ const getTopup = async (req, res, next) => {
     } else {
       fieldOrder = 'transaction_id';
     }
-    await mainModels.getDataTopup(keyword)
+    await mainModels
+      .getDataTopup(keyword)
       .then(async (result) => {
         const countData = result.length;
         const pages = countData / limit;
