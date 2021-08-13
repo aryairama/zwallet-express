@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import Redis from 'ioredis';
 
 export const redis = new Redis({

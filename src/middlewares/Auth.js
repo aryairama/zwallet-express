@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import Jwt from 'jsonwebtoken';
 import { responseError } from '../helpers/helpers.js';
 
@@ -43,5 +42,3 @@ export const Role = (...roles) => (req, res, next) => {
     responseError(res, 'Access Denied', 403, 'You do not have permission for this service', []);
   }
 };
-=======
->>>>>>> 491384432cca4b7da81904beaac6911c27762f2a
