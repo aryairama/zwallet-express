@@ -2,7 +2,9 @@
 /* eslint-disable camelcase */
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { response, responseError, responsePagination } from '../helpers/helpers.js';
+import {
+  response, responseError, responsePagination, createFolderImg,
+} from '../helpers/helpers.js';
 import mainModels from '../models/Main.js';
 import userModels from '../models/Users.js';
 
@@ -18,6 +20,7 @@ const topUp = async (req, res, next) => {
       amount,
     };
     if (req.files) {
+      createFolderImg('/public/img/topups');
       if (req.files.image_topup) {
         const filename = uuidv4() + path.extname(req.files.image_topup.name);
         const savePath = path.join(path.dirname(''), '/public/img/topups', filename);
