@@ -1,19 +1,19 @@
 /* eslint-disable no-shadow */
 /* eslint-disable camelcase */
 /* eslint-disable radix */
-import bcrypt from 'bcrypt';
-import Jwt from 'jsonwebtoken';
-import path from 'path';
-import fs from 'fs/promises';
-import { v4 as uuidv4 } from 'uuid';
-import {
+const bcrypt = require('bcrypt');
+const Jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs/promises');
+const { v4: uuidv4 } = require('uuid');
+const {
   response, responseError, responsePagination, createFolderImg,
-} from '../helpers/helpers.js';
-import userModel from '../models/Users.js';
-import sendEmail from '../helpers/sendEmail.js';
-import forgotPassword from '../helpers/forgotPassword.js';
-import { redis } from '../configs/redis.js';
-import { genAccessToken, genRefreshToken } from '../helpers/jwt.js';
+} = require('../helpers/helpers');
+const userModel = require('../models/Users');
+const sendEmail = require('../helpers/sendEmail');
+const forgotPassword = require('../helpers/forgotPassword');
+const { redis } = require('../configs/redis');
+const { genAccessToken, genRefreshToken } = require('../helpers/jwt');
 
 const register = async (req, res, next) => {
   try {
@@ -443,7 +443,7 @@ const deletePhoneNumber = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   register,
   activateAccount,
   createPIN,

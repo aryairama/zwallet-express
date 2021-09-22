@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+const { body } = require('express-validator');
 
 const rulesFileUploud = (req, res, next) => {
   if (req.files) {
@@ -49,12 +49,8 @@ const statusRules = () => [
 ];
 
 const transferFielfRules = () => [
-  body('user_reciever')
-    .notEmpty()
-    .withMessage("recipient can't empty"),
-  body('amount')
-    .notEmpty()
-    .withMessage('Please fill in the amount of money you want to transfer'),
+  body('user_reciever').notEmpty().withMessage("recipient can't empty"),
+  body('amount').notEmpty().withMessage('Please fill in the amount of money you want to transfer'),
   body('description')
     .notEmpty()
     .withMessage('You have to explain your top up')
@@ -75,6 +71,11 @@ const checkpin = () => [
     .withMessage('PIN must be number'),
 ];
 
-export {
-  topUpFieldRules, rulesFileUploud, rulesCreateImgTopUp, statusRules, transferFielfRules, checkpin,
+module.exports = {
+  topUpFieldRules,
+  rulesFileUploud,
+  rulesCreateImgTopUp,
+  statusRules,
+  transferFielfRules,
+  checkpin,
 };

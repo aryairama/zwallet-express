@@ -1,12 +1,12 @@
 /* eslint-disable radix */
 /* eslint-disable camelcase */
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import {
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+const {
   response, responseError, responsePagination, createFolderImg,
-} from '../helpers/helpers.js';
-import mainModels from '../models/Main.js';
-import userModels from '../models/Users.js';
+} = require('../helpers/helpers');
+const mainModels = require('../models/Main');
+const userModels = require('../models/Users');
 
 const topUp = async (req, res, next) => {
   try {
@@ -391,7 +391,7 @@ const getTopup = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   topUp,
   updatetransaction,
   getAllTransaction,

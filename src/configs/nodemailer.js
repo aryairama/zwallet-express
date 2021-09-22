@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
 const mailer = nodemailer.createTransport({
   host: process.env.NODEMAILER_HOST,
@@ -10,4 +10,4 @@ const mailer = nodemailer.createTransport({
   },
 });
 
-export default mailer;
+module.exports = mailer;

@@ -1,9 +1,11 @@
-/* eslint-disable import/prefer-default-export */
-import Redis from 'ioredis';
+const Redis = require('ioredis');
 
-export const redis = new Redis({
+const redis = new Redis({
+  path: process.env.PATH_REDIS,
   port: process.env.PORT_REDIS,
   host: process.env.HOST_REDIS,
   password: process.env.AUTH_REDIS,
   db: 0,
 });
+
+module.exports = { redis };

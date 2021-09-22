@@ -1,5 +1,5 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   registerFieldRules,
   PINRules,
   emailRules,
@@ -13,11 +13,11 @@ import {
   rulesRead,
   updatePassword,
   phoneNumberRules,
-} from '../validations/ValidatonUsers.js';
-import resultOfValidation from '../validations/ValidationResult.js';
-import constrollerUsers from '../controllers/ControllerUsers.js';
-import { checkTokenResetPassword, checkTokenActivation } from '../middlewares/checkToken.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+} = require('../validations/ValidatonUsers');
+const resultOfValidation = require('../validations/ValidationResult');
+const constrollerUsers = require('../controllers/ControllerUsers');
+const { checkTokenResetPassword, checkTokenActivation } = require('../middlewares/checkToken');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -66,4 +66,4 @@ router
   )
   .post('/deletephonenumber', Auth, Role('member', 'admin'), constrollerUsers.deletePhoneNumber);
 
-export default router;
+module.exports = router;

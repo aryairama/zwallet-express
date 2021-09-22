@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const register = (data) => new Promise((resolve, reject) => {
   connection.query('INSERT INTO users SET ?', data, (err, result) => {
@@ -85,7 +85,7 @@ const deletePhoneNumber = (userId) => new Promise((resolve, reject) => {
   });
 });
 
-export default {
+module.exports = {
   register,
   checkExistUser,
   activateAccount,

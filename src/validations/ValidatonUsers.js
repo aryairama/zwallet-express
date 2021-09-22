@@ -1,5 +1,5 @@
-import { body, query } from 'express-validator';
-import userModel from '../models/Users.js';
+const { body, query } = require('express-validator');
+const userModel = require('../models/Users');
 
 const registerFieldRules = () => [
   body('first_name')
@@ -192,7 +192,7 @@ const phoneNumberRules = () => [
     .withMessage('You have to enter the number with the country code like +62, etc'),
 ];
 
-export {
+module.exports = {
   registerFieldRules,
   PINRules,
   emailRules,
