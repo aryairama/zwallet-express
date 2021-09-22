@@ -39,6 +39,7 @@ router
   .get('/gettopup', Auth, Role('admin'), ControllerMain.getTopup)
   .post('/updatetransaction', Auth, Role('admin'), statusRules(), resultOfValidation, ControllerMain.updatetransaction)
   .post('/transfer', Auth, Role('member'), transferFielfRules(), resultOfValidation, ControllerMain.transfer)
-  .post('/cekpin', Auth, Role('member'), checkpin(), resultOfValidation, ControllerMain.checkPIN);
+  .post('/cekpin', Auth, Role('member'), checkpin(), resultOfValidation, ControllerMain.checkPIN)
+  .post('/pay/notif', ControllerMain.paymentStatus);
 
 module.exports = router;

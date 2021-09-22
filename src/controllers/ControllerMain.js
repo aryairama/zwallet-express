@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable radix */
 /* eslint-disable camelcase */
 const { v4: uuidv4 } = require('uuid');
@@ -110,6 +111,71 @@ const topUpPaymentGateway = async (req, res, next) => {
     } else {
       responseError(res, 'Error', 500, 'Error during insert data');
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const paymentStatus = async (req, res, next) => {
+  try {
+    midtransCore.transaction
+      .status(req.body.transaction_id)
+      .then(async (transactionStatusObject) => {
+        const orderId = transactionStatusObject.order_id;
+        const transactionStatus = transactionStatusObject.transaction_status;
+        const fraudStatus = transactionStatusObject.fraud_status;
+        const checkExistTransaction = await mainModels.checkExistTransaction(orderId, 'invoice_number');
+        if (checkExistTransaction.length > 0) {
+          const checkExistPayment = await mainModels.checkExistPayment(
+            checkExistTransaction[0].transaction_id,
+            'transaction_id',
+          );
+          const checkExistUser = await userModels.checkExistUser(checkExistTransaction[0].user_id, 'user_id');
+          if (checkExistPayment.length > 0 && checkExistUser.length > 0) {
+            if (transactionStatus === 'capture') {
+              if (fraudStatus === 'challenge') {
+                await mainModels.updatetransaction('pending', checkExistTransaction[0].transaction_id);
+                await mainModels.updatePayment('challenge', checkExistTransaction[0].transaction_id);
+              } else if (fraudStatus === 'accept') {
+                await mainModels.updatetransaction('approve', checkExistTransaction[0].transaction_id);
+                await mainModels.updatePayment('success', checkExistTransaction[0].transaction_id);
+                await userModels.updateSaldo(
+                  parseInt(checkExistUser[0].saldo) + parseInt(checkExistTransaction[0].amount),
+                  checkExistUser[0].user_id,
+                );
+              }
+            } else if (transactionStatus === 'settlement') {
+              await mainModels.updatetransaction('approve', checkExistTransaction[0].transaction_id);
+              await mainModels.updatePayment('settlement', checkExistTransaction[0].transaction_id);
+              await userModels.updateSaldo(
+                parseInt(checkExistUser[0].saldo) + parseInt(checkExistTransaction[0].amount),
+                checkExistUser[0].user_id,
+              );
+            } else if (
+              transactionStatus === 'cancel'
+              || transactionStatus === 'deny'
+              || transactionStatus === 'expire'
+            ) {
+              await mainModels.updatetransaction('cancel', checkExistTransaction[0].transaction_id);
+              await mainModels.updatePayment('failure', checkExistTransaction[0].transaction_id);
+            } else if (transactionStatus === 'pending') {
+              await mainModels.updatetransaction('pending', checkExistTransaction[0].transaction_id);
+              await mainModels.updatePayment('pending', checkExistTransaction[0].transaction_id);
+            } else if (transactionStatus === 'refund') {
+              await mainModels.updatetransaction('cancel', checkExistTransaction[0].transaction_id);
+              await mainModels.updatePayment('refund', checkExistTransaction[0].transaction_id);
+            }
+            response(res, 'status Transaction', 200, 'Successfuly update status payment', {});
+          } else {
+            responseError(res, 'Status Transaction', 403, 'Data does not match');
+          }
+        } else {
+          responseError(res, 'Status Transaction', 404, 'No transaction data');
+        }
+      })
+      .catch((error) => {
+        responseError(res, 'Status Transaction', 404, 'No transaction data');
+      });
   } catch (error) {
     next(error);
   }
@@ -474,4 +540,5 @@ module.exports = {
   checkPIN,
   showtransaction,
   getTopup,
+  paymentStatus,
 };

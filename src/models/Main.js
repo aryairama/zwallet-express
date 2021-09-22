@@ -137,6 +137,28 @@ const insertDataPayment = (data) => new Promise((resolve, reject) => {
   });
 });
 
+const checkExistTransaction = (fieldValue, field) => new Promise((resolve, reject) => {
+  connection.query(`SELECT * FROM transactions where ${field} = ?`, fieldValue, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const checkExistPayment = (fieldValue, field) => new Promise((resolve, reject) => {
+  connection.query(`SELECT * FROM payments where ${field} = ?`, fieldValue, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const updatePayment = (status, transactionId) => new Promise((resolve, reject) => {
+  connection.query(
+    'UPDATE payments SET status = ? WHERE transaction_id = ?',
+    [status, transactionId],
+    (err, result) => {
+      promiseResolveReject(resolve, reject, err, result);
+    },
+  );
+});
+
 module.exports = {
   insertDataTopup,
   insertImageTopup,
@@ -146,4 +168,7 @@ module.exports = {
   showtransaction,
   getDataTopup,
   insertDataPayment,
+  checkExistPayment,
+  checkExistTransaction,
+  updatePayment,
 };
