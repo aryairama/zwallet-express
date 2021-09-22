@@ -27,7 +27,7 @@ router
   .put(
     '/',
     Auth,
-    Role('member'),
+    Role('member', 'admin'),
     rulesFileUploud,
     updateEmail(),
     rulesUpdateImageProfile(),
@@ -44,12 +44,26 @@ router
   .post('/forgotpassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
   .get('/forgotpassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
   .post('/changepassword', changePasswordRules(), resultOfValidation, constrollerUsers.changePassword)
-  .post('/updatepassword', Auth, Role('member', 'admin'), updatePassword(), resultOfValidation, constrollerUsers.updatePassword)
+  .post(
+    '/updatepassword',
+    Auth,
+    Role('member', 'admin'),
+    updatePassword(),
+    resultOfValidation,
+    constrollerUsers.updatePassword,
+  )
 
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
   .post('/updatepin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.updatePin)
-  .post('/addphonenumber', Auth, Role('member', 'admin'), phoneNumberRules(), resultOfValidation, constrollerUsers.addPhoneNumber)
+  .post(
+    '/addphonenumber',
+    Auth,
+    Role('member', 'admin'),
+    phoneNumberRules(),
+    resultOfValidation,
+    constrollerUsers.addPhoneNumber,
+  )
   .post('/deletephonenumber', Auth, Role('member', 'admin'), constrollerUsers.deletePhoneNumber);
 
 export default router;
