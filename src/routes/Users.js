@@ -1,5 +1,5 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   registerFieldRules,
   PINRules,
   emailRules,
@@ -13,11 +13,11 @@ import {
   rulesRead,
   updatePassword,
   phoneNumberRules,
-} from '../validations/ValidatonUsers.js';
-import resultOfValidation from '../validations/ValidationResult.js';
-import constrollerUsers from '../controllers/ControllerUsers.js';
-import { checkTokenResetPassword, checkTokenActivation } from '../middlewares/checkToken.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+} = require('../validations/ValidatonUsers');
+const resultOfValidation = require('../validations/ValidationResult');
+const constrollerUsers = require('../controllers/ControllerUsers');
+const { checkTokenResetPassword, checkTokenActivation } = require('../middlewares/checkToken');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router
   .put(
     '/',
     Auth,
-    Role('member'),
+    Role('member', 'admin'),
     rulesFileUploud,
     updateEmail(),
     rulesUpdateImageProfile(),
@@ -44,12 +44,26 @@ router
   .post('/forgotpassword', emailRules(), resultOfValidation, constrollerUsers.forgotPW)
   .get('/forgotpassword/:token', checkTokenResetPassword, constrollerUsers.resetPW)
   .post('/changepassword', changePasswordRules(), resultOfValidation, constrollerUsers.changePassword)
-  .post('/updatepassword', Auth, Role('member', 'admin'), updatePassword(), resultOfValidation, constrollerUsers.updatePassword)
+  .post(
+    '/updatepassword',
+    Auth,
+    Role('member', 'admin'),
+    updatePassword(),
+    resultOfValidation,
+    constrollerUsers.updatePassword,
+  )
 
   // main feature
   .post('/createpin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.createPIN)
   .post('/updatepin', Auth, Role('member'), PINRules(), resultOfValidation, constrollerUsers.updatePin)
-  .post('/addphonenumber', Auth, Role('member', 'admin'), phoneNumberRules(), resultOfValidation, constrollerUsers.addPhoneNumber)
+  .post(
+    '/addphonenumber',
+    Auth,
+    Role('member', 'admin'),
+    phoneNumberRules(),
+    resultOfValidation,
+    constrollerUsers.addPhoneNumber,
+  )
   .post('/deletephonenumber', Auth, Role('member', 'admin'), constrollerUsers.deletePhoneNumber);
 
-export default router;
+module.exports = router;

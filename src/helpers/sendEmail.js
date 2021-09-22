@@ -1,5 +1,5 @@
-import nodemailer from '../configs/nodemailer.js';
-import email from '../template/email.js';
+const nodemailer = require('../configs/nodemailer');
+const email = require('../template/email');
 
 const sendEmail = (toEmail, token, name) => {
   console.log(process.env.FRONT_END_ACTIVATION_URL);
@@ -27,4 +27,4 @@ const sendEmail = (toEmail, token, name) => {
     });
 };
 // D:\My file\Document\Bootcamp Arkademy\TeamProject\zwallet-express\src\assets\img\emailSucess.png
-export default sendEmail;
+module.exports = sendEmail;

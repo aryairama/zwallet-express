@@ -1,5 +1,5 @@
-import { validationResult } from 'express-validator';
-import { responseError } from '../helpers/helpers.js';
+const { validationResult } = require('express-validator');
+const { responseError } = require('../helpers/helpers');
 
 const resultOfValidation = (req, res, next) => {
   const errors = validationResult(req);
@@ -9,4 +9,4 @@ const resultOfValidation = (req, res, next) => {
   next();
 };
 
-export default resultOfValidation;
+module.exports = resultOfValidation;

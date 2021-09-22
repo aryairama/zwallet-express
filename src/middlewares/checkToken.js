@@ -1,13 +1,11 @@
 /* eslint-disable no-shadow */
-import jwt from 'jsonwebtoken';
-import Redis from 'ioredis';
-import { responseError } from '../helpers/helpers.js';
-
-const redis = new Redis();
+const Jwt = require('jsonwebtoken');
+const { redis } = require('../configs/redis');
+const { responseError } = require('../helpers/helpers');
 
 const checkTokenResetPassword = (req, res, next) => {
   const { token } = req.params;
-  jwt.verify(token, process.env.FORGOT_PW_SECRET_KEY, (err, decoded) => {
+  Jwt.verify(token, process.env.FORGOT_PW_SECRET_KEY, (err, decoded) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
         responseError(
@@ -32,26 +30,15 @@ const checkTokenResetPassword = (req, res, next) => {
         );
       }
     } else {
-      redis.get(`JWTFORGOT-${decoded.id}`, (err, redisToken) => {
+      redis.get(`${process.env.PREFIX_REDIS}JWTFORGOT-${decoded.id}`, (err, redisToken) => {
         if (err) {
-          responseError(
-            res,
-            'Empty key redis',
-            400,
-            "you didn't request to reset password",
-            err,
-          );
+          responseError(res, 'Empty key redis', 400, "you didn't request to reset password", err);
         } else if (token === redisToken) {
           req.id = decoded.id;
           req.email = decoded.email;
           next();
         } else {
-          responseError(
-            res,
-            'Token is not compare',
-            400,
-            'Your token is invalid',
-          );
+          responseError(res, 'Token is not compare', 400, 'Your token is invalid');
         }
       });
     }
@@ -60,7 +47,7 @@ const checkTokenResetPassword = (req, res, next) => {
 
 const checkTokenActivation = (req, res, next) => {
   const { token } = req.params;
-  jwt.verify(token, process.env.VERIF_SECRET_KEY, (err, decoded) => {
+  Jwt.verify(token, process.env.VERIF_SECRET_KEY, (err, decoded) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
         responseError(
@@ -85,30 +72,19 @@ const checkTokenActivation = (req, res, next) => {
         );
       }
     } else {
-      redis.get(`JWTACTIVATION-${decoded.user_id}`, (err, redisToken) => {
+      redis.get(`${process.env.PREFIX_REDIS}JWTACTIVATION-${decoded.user_id}`, (err, redisToken) => {
         if (err) {
-          responseError(
-            res,
-            'Empty key redis',
-            400,
-            'Your account activation is invalid',
-            err,
-          );
+          responseError(res, 'Empty key redis', 400, 'Your account activation is invalid', err);
         } else if (token === redisToken) {
           req.id = decoded.id;
           req.email = decoded.email;
           next();
         } else {
-          responseError(
-            res,
-            'Token is not compare',
-            400,
-            'Your token is invalid',
-          );
+          responseError(res, 'Token is not compare', 400, 'Your token is invalid');
         }
       });
     }
   });
 };
 
-export { checkTokenResetPassword, checkTokenActivation };
+module.exports = { checkTokenResetPassword, checkTokenActivation };

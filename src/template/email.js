@@ -76,4 +76,4 @@ const templateEmail = (link, name) => `
 </html>
 `;
 
-export default templateEmail;
+module.exports = templateEmail;

@@ -1,5 +1,5 @@
-import nodemailer from '../configs/nodemailer.js';
-import templateForgotPassword from '../template/templateForgotPassword.js';
+const nodemailer = require('../configs/nodemailer');
+const templateForgotPassword = require('../template/templateForgotPassword');
 
 const forgotPassword = (toEmail, token, name) => {
   nodemailer
@@ -26,4 +26,4 @@ const forgotPassword = (toEmail, token, name) => {
     });
 };
 
-export default forgotPassword;
+module.exports = forgotPassword;

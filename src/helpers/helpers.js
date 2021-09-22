@@ -1,5 +1,5 @@
-import path from 'path';
-import checkFolder from 'fs';
+const path = require('path');
+const checkFolder = require('fs');
 
 const response = (res, status, statusCode, message, data) => {
   res.status(statusCode).json({
@@ -43,6 +43,10 @@ const createFolderImg = (direktori) => {
   }
 };
 
-export {
-  response, responseError, promiseResolveReject, responsePagination, createFolderImg,
+module.exports = {
+  response,
+  responseError,
+  promiseResolveReject,
+  responsePagination,
+  createFolderImg,
 };

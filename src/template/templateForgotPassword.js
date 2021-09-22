@@ -76,4 +76,4 @@ const templateForgotPassword = (link, name) => `
 </html>
 `;
 
-export default templateForgotPassword;
+module.exports = templateForgotPassword;
