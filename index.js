@@ -1,14 +1,14 @@
-import Express from 'express';
-import fileUpload from 'express-fileupload';
-import path from 'path';
-import 'dotenv/config';
-import cors from 'cors';
-import userRouter from './src/routes/Users.js';
-import mainRouter from './src/routes/Main.js';
-import { responseError } from './src/helpers/helpers.js';
+const Express = require('express');
+const fileUpload = require('express-fileupload');
+const path = require('path');
+require('dotenv').config();
+const cors = require('cors');
+const userRouter = require('./src/routes/Users');
+const mainRouter = require('./src/routes/Main');
+const { responseError } = require('./src/helpers/helpers');
 
 const app = Express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(Express.json());
