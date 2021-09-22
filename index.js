@@ -14,8 +14,6 @@ app.use(cors());
 app.use(Express.json());
 app.use(fileUpload());
 app.use('/public', Express.static(path.resolve('./public')));
-app.use('/file', Express.static(path.resolve('./src/assets/img/')));
-
 app.use('/users', userRouter);
 app.use('/main', mainRouter);
 

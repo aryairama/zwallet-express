@@ -2,7 +2,9 @@
 /* eslint-disable camelcase */
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { response, responseError, responsePagination } from '../helpers/helpers.js';
+import {
+  response, responseError, responsePagination, createFolderImg,
+} from '../helpers/helpers.js';
 import mainModels from '../models/Main.js';
 import userModels from '../models/Users.js';
 
@@ -18,6 +20,7 @@ const topUp = async (req, res, next) => {
       amount,
     };
     if (req.files) {
+      createFolderImg('/public/img/topups');
       if (req.files.image_topup) {
         const filename = uuidv4() + path.extname(req.files.image_topup.name);
         const savePath = path.join(path.dirname(''), '/public/img/topups', filename);
@@ -187,10 +190,11 @@ const updatetransaction = async (req, res, next) => {
     } = req.body;
     await mainModels
       .updatetransaction(status, transaction_id)
-      .then(() => {
+      .then(async () => {
         if (status === 'approve') {
+          const user_data = await userModels.checkExistUser(user_id, 'user_id');
           userModels
-            .updateSaldo(amount, user_id)
+            .updateSaldo(parseInt(amount) + parseInt(user_data[0].saldo), user_id)
             .then(() => {
               userModels
                 .checkExistUser(user_id, 'user_id')
@@ -349,7 +353,8 @@ const getTopup = async (req, res, next) => {
     } else {
       fieldOrder = 'transaction_id';
     }
-    await mainModels.getDataTopup(keyword)
+    await mainModels
+      .getDataTopup(keyword)
       .then(async (result) => {
         const countData = result.length;
         const pages = countData / limit;
