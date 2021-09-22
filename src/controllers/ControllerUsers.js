@@ -6,7 +6,9 @@ import Jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
-import { response, responseError, responsePagination } from '../helpers/helpers.js';
+import {
+  response, responseError, responsePagination, createFolderImg,
+} from '../helpers/helpers.js';
 import userModel from '../models/Users.js';
 import sendEmail from '../helpers/sendEmail.js';
 import forgotPassword from '../helpers/forgotPassword.js';
@@ -262,6 +264,7 @@ const updateProfile = async (req, res, next) => {
         data = { ...data, email: req.body.email };
       }
       if (req.files) {
+        createFolderImg('/public/img/profiles');
         if (req.files.image) {
           if (existUser[0].image && existUser[0].image.length > 10) {
             fs.unlink(path.join(path.dirname(''), `/${existUser[0].image}`));
