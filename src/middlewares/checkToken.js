@@ -30,7 +30,7 @@ const checkTokenResetPassword = (req, res, next) => {
         );
       }
     } else {
-      redis.get(`JWTFORGOT-${decoded.id}`, (err, redisToken) => {
+      redis.get(`${process.env.PREFIX_REDIS}JWTFORGOT-${decoded.id}`, (err, redisToken) => {
         if (err) {
           responseError(res, 'Empty key redis', 400, "you didn't request to reset password", err);
         } else if (token === redisToken) {
@@ -72,7 +72,7 @@ const checkTokenActivation = (req, res, next) => {
         );
       }
     } else {
-      redis.get(`JWTACTIVATION-${decoded.user_id}`, (err, redisToken) => {
+      redis.get(`${process.env.PREFIX_REDIS}JWTACTIVATION-${decoded.user_id}`, (err, redisToken) => {
         if (err) {
           responseError(res, 'Empty key redis', 400, 'Your account activation is invalid', err);
         } else if (token === redisToken) {

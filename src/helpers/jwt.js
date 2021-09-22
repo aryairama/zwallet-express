@@ -17,7 +17,7 @@ const genRefreshToken = (payload, option) => new Promise((resolve, reject) => {
       console.log(err);
       reject(err);
     }
-    redis.set(`jwtRefToken-${payload.user_id}`, token, 'EX', option.expiresIn);
+    redis.set(`${process.env.PREFIX_REDIS}jwtRefToken-${payload.user_id}`, token, 'EX', option.expiresIn);
     resolve(token);
   });
 });
@@ -28,7 +28,7 @@ const genVerifEmailToken = (payload, option) => new Promise((resolve, reject) =>
       console.log(err);
       reject(err);
     }
-    redis.set(`jwtEmailVerToken-${payload.user_id}`, token, 'EX', option.expiresIn);
+    redis.set(`${process.env.PREFIX_REDIS}jwtEmailVerToken-${payload.user_id}`, token, 'EX', option.expiresIn);
     resolve(token);
   });
 });

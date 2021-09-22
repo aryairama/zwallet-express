@@ -46,7 +46,7 @@ const register = async (req, res, next) => {
               `successfully added user data, we send link activation to ${dataUser.email}`,
               dataUser,
             );
-            redis.set(`JWTACTIVATION-${id}`, token);
+            redis.set(`${process.env.PREFIX_REDIS}JWTACTIVATION-${id}`, token, 'EX', 60 * 60 * 24);
           }
         });
       } else {
@@ -60,11 +60,13 @@ const register = async (req, res, next) => {
   }
 };
 
-const activateAccount = (req, res) => {
+const activateAccount = async (req, res) => {
   const { email } = req;
+  const user = await userModel.checkExistUser(email, 'email');
   userModel
     .activateAccount(email)
     .then(() => {
+      redis.del(`${process.env.PREFIX_REDIS}JWTACTIVATION-${user[0].user_id}`);
       response(res, 'Success', 200, 'Successfully activate account');
     })
     .catch((err) => {
@@ -98,7 +100,7 @@ const forgotPW = async (req, res, next) => {
       if (err) {
         responseError(res, 'JWT Error', 500, 'Failed created forgot password token', err);
       } else {
-        redis.set(`JWTFORGOT-${id}`, token);
+        redis.set(`${process.env.PREFIX_REDIS}JWTFORGOT-${id}`, token, 'EX', 60 * 60 * 24);
         forgotPassword(email, token, `${first_name} ${last_name}`);
         response(res, 'Success', 200, 'Successfully create token, check email for reset password');
       }
@@ -130,7 +132,7 @@ const changePassword = async (req, res, next) => {
       const data = {
         password: await bcrypt.hash(req.body.password, salt),
       };
-      await userModel
+      userModel
         .changePassword(data, id)
         .then((result) => {
           response(
@@ -140,7 +142,7 @@ const changePassword = async (req, res, next) => {
             'your password has been changed successfully! Please login with your new password',
             result,
           );
-          redis.del(`JWTFORGOT-${id}`);
+          redis.del(`${process.env.PREFIX_REDIS}JWTFORGOT-${id}`);
         })
         .catch((err) => {
           responseError(res, 'Error change password', 500, 'Password failed to change, please try again later', err);
@@ -154,7 +156,7 @@ const changePassword = async (req, res, next) => {
 const showUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await userModel
+    userModel
       .checkExistUser(id, 'user_id')
       .then((result) => {
         delete result[0].password;
@@ -204,7 +206,7 @@ const login = async (req, res, next) => {
 const logout = (req, res, next) => {
   try {
     // eslint-disable-next-line no-unused-vars
-    redis.del(`jwtRefToken-${req.userLogin.user_id}`, (error, result) => {
+    redis.del(`${process.env.PREFIX_REDIS}jwtRefToken-${req.userLogin.user_id}`, (error, result) => {
       if (error) {
         next(error);
       } else {
@@ -233,18 +235,21 @@ const refreshToken = async (req, res, next) => {
         }
       }
       // eslint-disable-next-line no-unused-vars
-      const cacheRefToken = redis.get(`jwtRefToken-${decode.user_id}`, async (error, cacheToken) => {
-        if (cacheToken === refToken) {
-          delete decode.iat;
-          delete decode.exp;
-          redis.del(`jwtRefToken-${decode.user_id}`);
-          const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 });
-          const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 2 });
-          response(res, 'Success', 200, 'AccessToken', { accessToken, refreshToken: newRefToken });
-        } else {
-          responseError(res, 'Authorized failed', 403, 'Wrong refreshToken', []);
-        }
-      });
+      const cacheRefToken = redis.get(
+        `${process.env.PREFIX_REDIS}jwtRefToken-${decode.user_id}`,
+        async (error, cacheToken) => {
+          if (cacheToken === refToken) {
+            delete decode.iat;
+            delete decode.exp;
+            redis.del(`${process.env.PREFIX_REDIS}jwtRefToken-${decode.user_id}`);
+            const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 });
+            const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 2 });
+            response(res, 'Success', 200, 'AccessToken', { accessToken, refreshToken: newRefToken });
+          } else {
+            responseError(res, 'Authorized failed', 403, 'Wrong refreshToken', []);
+          }
+        },
+      );
     });
   } catch (error) {
     next(error);
