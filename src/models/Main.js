@@ -131,6 +131,11 @@ const getDataTopup = (keyword, order = '', fieldOrder = '', start = '', limit = 
     );
   }
 });
+const insertDataPayment = (data) => new Promise((resolve, reject) => {
+  connection.query('INSERT INTO payments SET ?', data, (err, result) => {
+    promiseResolveReject(resolve, reject, err, result);
+  });
+});
 
 module.exports = {
   insertDataTopup,
@@ -140,4 +145,5 @@ module.exports = {
   transfer,
   showtransaction,
   getDataTopup,
+  insertDataPayment,
 };

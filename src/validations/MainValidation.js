@@ -39,6 +39,31 @@ const topUpFieldRules = () => [
     .withMessage('nominal must be a number'),
 ];
 
+const topUpPaymentGatewayRules = () => [
+  body('payment_type')
+    .notEmpty()
+    .withMessage('payment_type is required')
+    .bail()
+    .isIn(['permata', 'echannel', 'bank_transfer'])
+    .withMessage('the value of the payment_type must be permata, echannel or bank_transfer'),
+  body('bank_transfer')
+    .if((value, { req }) => req.body.payment_type === 'bank_transfer')
+    .notEmpty()
+    .withMessage('bank_transfer is required')
+    .bail()
+    .isIn(['bni', 'bca', 'bri'])
+    .withMessage('the value of the bank_transfer must be bni, bca or bri'),
+  body('bank_transfer')
+    .if((value, { req }) => req.body.payment_type === 'permata' || req.body.payment_type === 'echannel')
+    .optional({ checkFalsy: true })
+    .custom((value) => {
+      if (value !== '') {
+        throw new Error('Bank transfer must be blank for permata and mandiri banks');
+      }
+      return true;
+    }),
+];
+
 const statusRules = () => [
   body('status')
     .notEmpty()
@@ -78,4 +103,5 @@ module.exports = {
   statusRules,
   transferFielfRules,
   checkpin,
+  topUpPaymentGatewayRules,
 };

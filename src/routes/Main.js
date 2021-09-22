@@ -9,6 +9,7 @@ const {
   statusRules,
   transferFielfRules,
   checkpin,
+  topUpPaymentGatewayRules,
 } = require('../validations/MainValidation');
 
 const router = express.Router();
@@ -25,6 +26,15 @@ router
     topUpFieldRules(),
     resultOfValidation,
     ControllerMain.topUp,
+  )
+  .post(
+    '/topup-payment-gateway',
+    Auth,
+    Role('member'),
+    topUpFieldRules(),
+    topUpPaymentGatewayRules(),
+    resultOfValidation,
+    ControllerMain.topUpPaymentGateway,
   )
   .get('/gettopup', Auth, Role('admin'), ControllerMain.getTopup)
   .post('/updatetransaction', Auth, Role('admin'), statusRules(), resultOfValidation, ControllerMain.updatetransaction)
