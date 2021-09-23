@@ -128,7 +128,7 @@ MIDTRANS_CLIENT_KEY = [CLIENT_KEY]
 
 ## Rest Api
 
-You can view my Postman collection [here](https://www.postman.com/workspace/Zwallet-Team~2169e154-425f-4fa4-a152-a299344f8bcf/collection/10655215-216719e0-926d-4baa-af5c-d61ed0b8f3b7)
+You can view my Postman collection [here](https://www.postman.com/crimson-meadow-842892/workspace/zwallet-team)
 </br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/10655215-216719e0-926d-4baa-af5c-d61ed0b8f3b7?action=collection%2Ffork&collection-url=entityId%3D10655215-216719e0-926d-4baa-af5c-d61ed0b8f3b7%26entityType%3Dcollection%26workspaceId%3D2169e154-425f-4fa4-a152-a299344f8bcf)
 
