@@ -282,7 +282,7 @@ const showtransaction = async (req, res, next) => {
     }
     mainModels
       .showtransaction(userId, transactionId)
-      .then((result) => {
+      .then(async (result) => {
         if (result.length > 0) {
           const { timeTransaction } = result[0];
           const monthNames = [
@@ -308,6 +308,12 @@ const showtransaction = async (req, res, next) => {
           delete result[0].timeTransaction;
           if (result[0].id_recipient === userId) {
             result[0].transaction_type = 'transfer_in';
+          }
+          const payments = await mainModels.checkExistPayment(result[0].transaction_id, 'transaction_id');
+          if (payments.length > 0) {
+            result[0].payment = { ...payments[0] };
+          } else if (payments.length === 0) {
+            result[0].payment = {};
           }
           response(res, 'Success', 200, 'Data successfully loaded', result[0]);
         } else {
