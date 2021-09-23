@@ -158,14 +158,14 @@ Contributions are what make the open source community such an amazing place to b
   <table>
     <tr>
       <td align="center">
-        <a href="https://github.com/aryairama%22%3E
+        <a href="https://github.com/aryairama">
           <img width="100" src="https://avatars.githubusercontent.com/u/73978824?v=4" alt="Arya Irama Wahono"><br/>
           <sub><b>Arya Irama Wahono</b></sub> <br/>
           <sub>Full Stack Web Developer</sub>
         </a>
       </td>
       <td align="center">
-        <a href="https://github.com/Chandra-Kurnia%22%3E
+        <a href="https://github.com/Chandra-Kurnia">
           <img width="100" src="https://avatars.githubusercontent.com/u/75248269?v=4" alt="Chandra Kurniawan"><br/>
           <sub><b>Chandra Kurniawan</b></sub> <br/>
           <sub>Back End Developer</sub>
